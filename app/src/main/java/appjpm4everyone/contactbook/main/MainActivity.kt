@@ -94,21 +94,8 @@ class MainActivity : BaseActivity(), CommunicateFab {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
-
-                //Toast.makeText(this@MainActivity, "on Swiped ", Toast.LENGTH_SHORT).show()
-                /*if (Build.VERSION.SDK_INT >= 21) {
-                    showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
-                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
-                } else {
-                    showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
-                            resources.getDrawable(R.drawable.ic_delete))
-                }*/
-
                 showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
                         ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
-                /*showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
-                    ResourcesCompat.getDrawable(R.drawable.ic_delete)!!
-                )*/
                 //Remove swiped item from list and notify the RecyclerView
                 val position = viewHolder.adapterPosition
                 list.removeAt(position)
