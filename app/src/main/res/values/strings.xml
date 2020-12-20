@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ContactBook</string>
+    <string name="book">Agenda</string>
+    <string name="search_contact">Buscar Contacto</string>
+</resources>
