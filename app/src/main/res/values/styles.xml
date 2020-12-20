@@ -165,7 +165,7 @@
     </style>
 
     <!-- Buttons Style -->
-    <style name="ReconoSerID.Button" parent="Base.TextAppearance.AppCompat.Button">
+    <style name="Custom.Button" parent="Base.TextAppearance.AppCompat.Button">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:textColor">@color/colorWhite</item>
         <item name="android:background">@drawable/background_button_round_blue</item>
@@ -175,7 +175,7 @@
         <item name="android:textSize">@dimen/text_dim_16</item>
     </style>
 
-    <style name="ReconoSerID.Button.Normal" parent="ReconoSerID.Button">
+    <style name="Custom.Button.Normal" parent="Custom.Button">
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_marginBottom">@dimen/margin_14</item>
@@ -184,7 +184,7 @@
         <item name="elevation">0dp</item>
     </style>
 
-    <style name="ReconoSerID.Button.Sisec" parent="ReconoSerID.Button">
+    <style name="Custom.Button.Disable" parent="Custom.Button">
         <item name="android:layout_height">@dimen/button_height</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_marginBottom">@dimen/margin_14</item>
@@ -195,16 +195,16 @@
         <item name="elevation">0dp</item>
     </style>
 
-    <style name="ReconoSerID.Button.Black" parent="ReconoSerID.Button.Normal">
+    <style name="Custom.Button.Black" parent="Custom.Button.Normal">
         <item name="android:background">@drawable/background_button_round_black</item>
     </style>
 
-    <style name="ReconoSerID.Button.Yellow" parent="ReconoSerID.Button.Normal">
+    <style name="Custom.Button.Yellow" parent="Custom.Button.Normal">
         <item name="android:background">@drawable/background_button_round_yellow</item>
         <item name="android:textColor">@color/colorBlack</item>
     </style>
 
-    <style name="ReconoSerID.Button.Blue" parent="ReconoSerID.Button.Normal">
+    <style name="Custom.Button.Blue" parent="Custom.Button.Normal">
         <item name="android:background">@drawable/background_button_round_blue</item>
         <item name="android:textColor">@color/colorWhite</item>
     </style>
@@ -271,7 +271,7 @@
         <item name="itemTextColor">@color/selector_item</item>
     </style>
 
-    <style name="ReconoSerID.Button.Magenta" parent="ReconoSerID.Button.Normal">
+    <style name="Custom.Button.Magenta" parent="Custom.Button.Normal">
         <item name="android:background">@drawable/background_button_round_red</item>
     </style>
 

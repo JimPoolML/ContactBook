@@ -1,10 +1,29 @@
 <resources>
     <string name="app_name">ContactBook</string>
     <string name="book">Agenda</string>
+    <string name="contact">Contacto</string>
     <string name="search_contact">Buscar Contacto</string>
     <string name="lorem_ipsum">Lorem Ipsum</string>
     <string name="n_0123456789">0123456789</string>
     <string name="jp">JP</string>
     <string name="add_contact">Contacto agregado</string>
     <string name="delete_contact">Contacto eliminado</string>
+
+    <string name="invalid_email">Correo electrónico inválido</string>
+    <string name="invalid_name">Nombre inválido</string>
+    <string name="invalid_phone">Teléfono inválido</string>
+
+    <string name="hint_name">Nombre</string>
+    <string name="hint_address">Dirección</string>
+    <string name="hint_number">Celular</string>
+    <string name="hint_telephone">Teléfono</string>
+    <string name="hint_email">Correo</string>
+
+    <string name="cancel">Cancelar</string>
+    <string name="agree">Aceptar</string>
+
+
+
+
+
 </resources>

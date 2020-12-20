@@ -1,8 +1,11 @@
 package appjpm4everyone.contactbook.main
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,9 +14,11 @@ import appjpm4everyone.contactbook.R
 import appjpm4everyone.contactbook.adapters.ContactAdapter
 import appjpm4everyone.contactbook.base.BaseActivity
 import appjpm4everyone.contactbook.classes.WeakContact
+import appjpm4everyone.contactbook.createuser.CreateUserActivity
 import appjpm4everyone.contactbook.databinding.ActivityMainBinding
 import appjpm4everyone.libraryFAB.CommunicateFab
 import appjpm4everyone.libraryFAB.MovableFloatingActionButton
+import com.google.android.material.internal.ContextUtils.getActivity
 
 
 class MainActivity : BaseActivity(), CommunicateFab {
@@ -91,8 +96,19 @@ class MainActivity : BaseActivity(), CommunicateFab {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
 
                 //Toast.makeText(this@MainActivity, "on Swiped ", Toast.LENGTH_SHORT).show()
+                /*if (Build.VERSION.SDK_INT >= 21) {
+                    showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
+                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
+                } else {
+                    showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
+                            resources.getDrawable(R.drawable.ic_delete))
+                }*/
+
                 showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
-                resources.getDrawable(R.drawable.ic_delete))
+                        ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
+                /*showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
+                    ResourcesCompat.getDrawable(R.drawable.ic_delete)!!
+                )*/
                 //Remove swiped item from list and notify the RecyclerView
                 val position = viewHolder.adapterPosition
                 list.removeAt(position)
@@ -113,7 +129,8 @@ class MainActivity : BaseActivity(), CommunicateFab {
     }
 
     override fun onClickFab(xPos: Float, yPos: Float) {
-        Toast.makeText(this, "Xpos : $xPos Ypos : $yPos", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, CreateUserActivity::class.java)
+        startActivity(intent)
     }
 
 }
