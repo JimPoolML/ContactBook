@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/rv_circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginBottom="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/dp_15"
+        android:tint="@color/blue_abis"
+        app:srcCompat="@drawable/simple_circle"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/rv_circle_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/brown_regular"
+        android:maxLength="2"
+        android:maxLines="1"
+        android:text="@string/jp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_dim_24"
+        app:layout_constraintBottom_toBottomOf="@id/rv_circle"
+        app:layout_constraintEnd_toEndOf="@id/rv_circle"
+        app:layout_constraintStart_toStartOf="@+id/rv_circle"
+        app:layout_constraintTop_toTopOf="@+id/rv_circle" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/rv_person"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/rv_circle"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/dp_15"
+        android:textSize="@dimen/text_dim_24"
+        android:maxLines="1"
+        android:fontFamily="@font/brown_regular"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="@string/lorem_ipsum"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/rv_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@+id/rv_circle"
+        app:layout_constraintTop_toBottomOf="@id/rv_person"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginBottom="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/dp_15"
+        android:textSize="@dimen/text_dim_24"
+        android:maxLines="1"
+        android:fontFamily="@font/brown_regular"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="@string/n_0123456789"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

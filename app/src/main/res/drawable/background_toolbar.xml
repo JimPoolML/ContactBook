@@ -5,8 +5,8 @@
             <!--make a gradient background-->
             <gradient
                 android:type="linear"
-                android:startColor="@color/purple_sisec_toolbar"
-                android:endColor="@color/purple_sisec_toolbar"
+                android:startColor="@color/purple"
+                android:endColor="@color/purple"
                 android:angle="0" />
         </shape>
     </item>

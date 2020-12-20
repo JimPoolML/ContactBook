@@ -94,6 +94,8 @@ dependencies {
     //Anko
     implementation 'org.jetbrains.anko:anko-common:0.9'
 
+    implementation 'com.github.JimPoolML:customFAB:0.3.0'
+
     testImplementation testLibs.values()
     androidTestImplementation androidTestLibs.values()
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
