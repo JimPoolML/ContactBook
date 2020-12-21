@@ -1,16 +1,28 @@
 package appjpm4everyone.contactbook.main
 
+import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.database.MatrixCursor
+import android.net.Uri
 import android.os.Bundle
+import android.provider.BaseColumns
+import android.provider.Settings
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.cursoradapter.widget.SimpleCursorAdapter
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import appjpm4everyone.contactbook.R
 import appjpm4everyone.contactbook.adapters.ContactAdapter
+import appjpm4everyone.contactbook.adapters.OnGetButton
 import appjpm4everyone.contactbook.base.BaseActivity
 import appjpm4everyone.contactbook.classes.StrongContact
 import appjpm4everyone.contactbook.classes.WeakContact
@@ -19,9 +31,15 @@ import appjpm4everyone.contactbook.database.MyDataBase
 import appjpm4everyone.contactbook.databinding.ActivityMainBinding
 import appjpm4everyone.libraryFAB.CommunicateFab
 import appjpm4everyone.libraryFAB.MovableFloatingActionButton
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import timber.log.Timber
 
 
-class MainActivity : BaseActivity(), CommunicateFab {
+class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
 
     private val ADD_CODE = 10
     private val MODIFY_CODE = 11
@@ -32,6 +50,9 @@ class MainActivity : BaseActivity(), CommunicateFab {
     private lateinit var contactAdapter: ContactAdapter
 
     private var list : ArrayList<WeakContact> = ArrayList()
+    //To SearchView
+    private lateinit var contactList : Array<String?>
+    private lateinit var mAdapter : SimpleCursorAdapter
 
     //DataBase
     private lateinit var dataBase : MyDataBase
@@ -45,6 +66,7 @@ class MainActivity : BaseActivity(), CommunicateFab {
         setContentView(binding.root)
 
         initUI()
+        getPermissions()
     }
 
     private fun initUI() {
@@ -61,10 +83,82 @@ class MainActivity : BaseActivity(), CommunicateFab {
                 binding.searchBreed.isFocusable = true
                 binding.searchBreed.isIconified = false
                 binding.searchBreed.requestFocusFromTouch()
+                setSearchView()
             }
         }
         setContactAdapter()
         showFAB()
+    }
+
+    private fun setSearchView() {
+        binding.searchBreed.clearFocus()
+
+        contactList = arrayOfNulls(list.size)
+        for (i in list.indices) {
+            contactList[i] = list[i].name
+        }
+
+        val from = arrayOf("contactsFound")
+        val to = intArrayOf(android.R.id.text1)
+        mAdapter = SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, android.widget.CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)
+
+        binding.searchBreed.suggestionsAdapter = mAdapter
+
+        binding.searchBreed.setOnSuggestionListener(object:
+                androidx.appcompat.widget.SearchView.OnSuggestionListener {
+            override fun onSuggestionSelect(position: Int): Boolean {
+                return true
+            }
+
+            override fun onSuggestionClick(position: Int): Boolean {
+                val cursor = mAdapter.getItem(position) as Cursor
+                val txt = cursor.getString(cursor.getColumnIndex("contactsFound"))
+                binding.searchBreed.setQuery(txt, false)
+                callContact(list[position].number.trim())
+                hideKeyboardFrom(this@MainActivity)
+                return true
+            }
+        })
+
+        binding.searchBreed.setOnQueryTextListener(object :
+                androidx.appcompat.widget.SearchView.OnQueryTextListener {
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                populateAdapter(newText);
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                if (contactList.contains(query)) {
+                    //TODO call contact
+                    //callContact()
+                    showLongSnackError(this@MainActivity, resources.getString(R.string.call_contact),
+                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_error)!!)
+                } else {
+                    showLongSnackError(this@MainActivity, resources.getString(R.string.not_found_contact),
+                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_error)!!)
+                }
+                hideKeyboardFrom(this@MainActivity)
+                return false
+            }
+
+        })
+    }
+
+    private fun callContact(callNumber: String) {
+        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$callNumber"))
+        startActivity(intent)
+    }
+
+    // You must implements your logic to get data using OrmLite
+    private fun populateAdapter(query: String) {
+        val c = MatrixCursor(arrayOf(BaseColumns._ID, "contactsFound"))
+        for (i in contactList.indices) {
+            if (contactList[i]!!.toLowerCase()
+                            .startsWith(query.toLowerCase())
+            ) c.addRow(arrayOf(i, contactList[i]!!))
+        }
+        mAdapter.changeCursor(c)
     }
 
     private fun setContactAdapter() {
@@ -77,8 +171,8 @@ class MainActivity : BaseActivity(), CommunicateFab {
                 minStringContact = dataBase.recoverContact(ids[i])!!
                 list.add(WeakContact("JP", minStringContact.name, minStringContact.cellPhone, ids[i]))
             }
-            contactAdapter =
-                    ContactAdapter(list)
+            //Set in adapter the list and interface
+            contactAdapter = ContactAdapter(list, this)
             binding.rvContact.setHasFixedSize(true)
             binding.rvContact.layoutManager = LinearLayoutManager(this)
             binding.rvContact.adapter = contactAdapter
@@ -149,7 +243,7 @@ class MainActivity : BaseActivity(), CommunicateFab {
 
     private fun showFAB() {
         //Cast length
-        val spaceFab = resources.getDimension(R.dimen.dp_56).toInt()
+        val spaceFab = resources.getDimension(R.dimen.dp_64).toInt()
         val movableFloatingActionButton =
             MovableFloatingActionButton(this, true, spaceFab)
         movableFloatingActionButton.openFAB(this, R.drawable.radioactive_free, null, null, null)
@@ -159,20 +253,15 @@ class MainActivity : BaseActivity(), CommunicateFab {
         addContact()
     }
 
+    override fun onClickButton(phoneNumber: String) {
+        callContact(phoneNumber)
+    }
+
     private fun addContact() {
         val intent = Intent(this, CreateUserActivity::class.java)
         startActivityForResult(intent, ADD_CODE)
-        //startActivity(intent)
     }
 
-    /*  public void eliminaNota(View vista)
-    {
-        Intent i = new Intent(this,MuestraNota.class);
-        i.putExtra("ID",iDAct );
-
-
-    }
-*/
     override fun onActivityResult(resul: Int, codigo: Int, data: Intent?) {
         super.onActivityResult(resul, codigo, data)
         if (codigo == Activity.RESULT_OK) {
@@ -197,5 +286,117 @@ class MainActivity : BaseActivity(), CommunicateFab {
         }
     }
 
+    private fun getPermissions() {
+        if (allPermissionsGranted()) {
+            Timber.i("Permission granted")
+        } else {
+            requestPermissionsDexter()
+        }
+    }
+
+    private fun allPermissionsGranted(): Boolean {
+        for (permission in this.getRequiredPermissions()!!) {
+            permission?.let {
+                if (isPermissionGranted(this, it).not()) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun isPermissionGranted(context: Context, permission: String): Boolean {
+        if (ContextCompat.checkSelfPermission(context, permission)
+                == PackageManager.PERMISSION_GRANTED
+        ) {
+            Timber.i("Permission granted: %s", permission)
+            return true
+        }
+        Timber.i("Permission NOT granted: %s", permission)
+        return false
+    }
+
+    private fun getRequiredPermissions(): Array<String?>? {
+        return try {
+            val info = this.packageManager
+                    .getPackageInfo(this.packageName, PackageManager.GET_PERMISSIONS)
+            val ps = info.requestedPermissions
+            if (ps != null && ps.isNotEmpty()) {
+                ps
+            } else {
+                arrayOfNulls(0)
+            }
+        } catch (e: Exception) {
+            arrayOfNulls(0)
+        }
+    }
+
+    private fun requestPermissionsDexter() {
+        Dexter.withContext(this)
+                //Dexter.withActivity(this)
+                .withPermissions(
+                        Manifest.permission.CALL_PHONE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                )
+                .withListener(object : MultiplePermissionsListener {
+                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                        // check if all permissions are granted
+                        if (report.areAllPermissionsGranted()) {
+                            permissionsOK()
+                        }
+                        // check for permanent denial of any permission
+                        if (report.isAnyPermissionPermanentlyDenied) {
+                            // show alert dialog navigating to Settings
+                            showSettingsDialog()
+                        }
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                            permissions: List<PermissionRequest>,
+                            token: PermissionToken
+                    ) {
+                        token.continuePermissionRequest()
+                    }
+                })
+                .withErrorListener { error -> Toast.makeText(applicationContext, "Error occurred! $error", Toast.LENGTH_SHORT).show() }
+                .onSameThread()
+                .check()
+    }
+
+    private fun permissionsOK() {
+        showLongSnackError(this, resources.getString(R.string.granted_access),
+                ContextCompat.getDrawable(this, R.drawable.ic_check_ok)!!)
+    }
+
+
+    /**
+     * Showing Alert Dialog with Settings option
+     * Navigates user to app settings
+     * NOTE: Keep proper title and message depending on your app
+     */
+    private fun showSettingsDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Need Permissions")
+        builder.setMessage("This app needs permission to use this feature. You can grant them in app settings.")
+        builder.setPositiveButton("GOTO SETTINGS") { dialog, _ ->
+            dialog.cancel()
+            openSettings()
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.cancel()
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+        }
+        builder.show()
+    }
+
+    // navigating user to app settings
+    private fun openSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", packageName, null)
+        intent.data = uri
+        startActivityForResult(intent, 101)
+    }
 
 }

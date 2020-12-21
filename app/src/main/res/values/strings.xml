@@ -8,6 +8,8 @@
     <string name="jp">JP</string>
     <string name="add_contact">Contacto agregado</string>
     <string name="delete_contact">Contacto eliminado</string>
+    <string name="not_found_contact">Contacto no encontrado</string>
+    <string name="call_contact">Llamar contacto</string>
 
     <string name="invalid_email">Correo electrónico inválido</string>
     <string name="invalid_name">Nombre inválido</string>
