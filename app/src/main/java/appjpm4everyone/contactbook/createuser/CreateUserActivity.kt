@@ -22,9 +22,12 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
 
+
 class CreateUserActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCreateUserBinding
+    private var idPosition : Int = 0
+    private var isModify = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +38,24 @@ class CreateUserActivity : BaseActivity() {
 
         initUI()
         getPermissions()
+
+        onDataBundle(intent.extras)
     }
+
+    private fun onDataBundle(extras: Bundle?) {
+        extras?.let {
+            isModify = it.getBoolean("modify")
+            idPosition = it.getInt("id", 0)
+            binding.edtName.text = Utils.editableToString(it.getString("name", ""))
+            binding.edtAddress.text = Utils.editableToString(it.getString("address", ""))
+            binding.edtCellPhone.text = Utils.editableToString(it.getString("cellPhone", ""))
+            binding.edtLocalPhone.text = Utils.editableToString(it.getString("localPhone", ""))
+            binding.edtEmail.text = Utils.editableToString(it.getString("email", ""))
+        }
+    }
+
+
+
 
     private fun initUI() {
         binding.botonCancelar.setOnClickListener {
@@ -52,6 +72,9 @@ class CreateUserActivity : BaseActivity() {
     private fun setDataBaseValues() {
         if(validateText()){
             val intent = Intent()
+            if(isModify){
+                intent.putExtra("id", idPosition)
+            }
             intent.putExtra("name", ""+binding.edtName.text)
             intent.putExtra("address", ""+binding.edtAddress.text)
             intent.putExtra("cellPhone", ""+binding.edtCellPhone.text)

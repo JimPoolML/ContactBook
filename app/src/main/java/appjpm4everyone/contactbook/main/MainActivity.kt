@@ -23,8 +23,8 @@ import appjpm4everyone.libraryFAB.MovableFloatingActionButton
 
 class MainActivity : BaseActivity(), CommunicateFab {
 
-    val ADD_CODE = 10
-    val MODIFY_CODE = 11
+    private val ADD_CODE = 10
+    private val MODIFY_CODE = 11
     val DELETE_CODE = 12
 
     private lateinit var binding : ActivityMainBinding
@@ -117,19 +117,34 @@ class MainActivity : BaseActivity(), CommunicateFab {
                     showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
                             ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
                     //Remove swiped item from dataBase and notify the RecyclerView
-                    //val position = viewHolder.adapterPosition
+                    //take database position
                     val position = list[viewHolder.adapterPosition].id
                     dataBase.eraseContact(position)
+                    //Take list position
                     list.removeAt(viewHolder.adapterPosition)
                     contactAdapter.notifyDataSetChanged()
+                }else if(swipeDir == 8){
+                    //Right direction
+                    recoverPosition(list[viewHolder.adapterPosition].id)
                 }
-
-
             }
         }
 
         val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
         itemTouchHelper.attachToRecyclerView(binding.rvContact)
+    }
+
+    private fun recoverPosition(id: Int) {
+        val i = Intent(this, CreateUserActivity::class.java)
+        i.putExtra("modify", true)
+        i.putExtra("id", id)
+        val minStrongContact: StrongContact = dataBase.recoverContact(id)!!
+        i.putExtra("name", minStrongContact.name)
+        i.putExtra("address", minStrongContact.address)
+        i.putExtra("cellPhone", minStrongContact.cellPhone)
+        i.putExtra("localPhone", minStrongContact.localPhone)
+        i.putExtra("email", minStrongContact.email)
+        startActivityForResult(i, MODIFY_CODE)
     }
 
     private fun showFAB() {
@@ -169,13 +184,15 @@ class MainActivity : BaseActivity(), CommunicateFab {
                 val email = data.extras!!.getString("email")
                 dataBase.addContact(name, address, cellPhone, localPhone, email )
                 setContactAdapter()
-                // adaptador.notifyDataSetChanged(); // metodo para notificar que los datos han cambiado
-            } else {
-                /*val fecha = data.extras!!.getString("Fecha")
-                val contenido = data.extras!!.getString("Contenido")
-                val mid = data.extras!!.getInt("ID")
-                MDB.modificarNota(mid, contenido, fecha)
-                rellenaLista()*/
+            } else if (resul == MODIFY_CODE) {
+                val name = data?.extras!!.getString("name")
+                val address = data.extras!!.getString("address")
+                val cellPhone = data.extras!!.getString("cellPhone")
+                val localPhone = data.extras!!.getString("localPhone")
+                val email = data.extras!!.getString("email")
+                val id = data.extras!!.getInt("id")
+                dataBase.modifyContact( id, name, address, cellPhone, localPhone, email )
+                setContactAdapter()
             }
         }
     }

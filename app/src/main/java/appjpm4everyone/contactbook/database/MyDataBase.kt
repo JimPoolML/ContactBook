@@ -53,7 +53,7 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
         db.close()
     }
 
-    fun modifyContact(id: Int, name: String, address: String, cellPhone: String, localPhone: String, email: String) {
+    fun modifyContact(id: Int, name: String?, address: String?, cellPhone: String?, localPhone: String?, email: String?) {
         val db = writableDatabase
         val values = ContentValues()
         if (db != null) {

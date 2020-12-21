@@ -1,5 +1,7 @@
 package appjpm4everyone.contactbook.utils
 
+import android.text.Editable
+import android.text.SpannableStringBuilder
 import android.util.Patterns
 import java.util.regex.Pattern
 
@@ -40,6 +42,14 @@ object Utils {
             }
         }else{
             false
+        }
+    }
+
+    fun editableToString(string: String) : Editable{
+        return if(string.isNullOrEmpty()){
+            SpannableStringBuilder("")
+        }else{
+            SpannableStringBuilder(string)
         }
     }
 
