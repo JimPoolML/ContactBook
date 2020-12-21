@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -31,31 +32,34 @@ import appjpm4everyone.contactbook.database.MyDataBase
 import appjpm4everyone.contactbook.databinding.ActivityMainBinding
 import appjpm4everyone.libraryFAB.CommunicateFab
 import appjpm4everyone.libraryFAB.MovableFloatingActionButton
+import com.google.gson.GsonBuilder
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
+import java.io.File
 
 
 class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
 
     private val ADD_CODE = 10
     private val MODIFY_CODE = 11
-    val DELETE_CODE = 12
 
-    private lateinit var binding : ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
+
     //To RecyclerView
     private lateinit var contactAdapter: ContactAdapter
 
-    private var list : ArrayList<WeakContact> = ArrayList()
+    private var list: ArrayList<WeakContact> = ArrayList()
+
     //To SearchView
-    private lateinit var contactList : Array<String?>
-    private lateinit var mAdapter : SimpleCursorAdapter
+    private lateinit var contactList: Array<String?>
+    private lateinit var mAdapter: SimpleCursorAdapter
 
     //DataBase
-    private lateinit var dataBase : MyDataBase
+    private lateinit var dataBase: MyDataBase
     private lateinit var ids: IntArray
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,8 +69,9 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initUI()
         getPermissions()
+        initUI()
+
     }
 
     private fun initUI() {
@@ -75,10 +80,10 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         dataBase = MyDataBase(this)
 
         binding.btnSearch.setOnClickListener {
-            if(binding.searchBreed.visibility == View.VISIBLE ){
+            if (binding.searchBreed.visibility == View.VISIBLE) {
                 binding.searchBreed.visibility = View.GONE
                 binding.searchBreed.clearFocus()
-            }else{
+            } else {
                 binding.searchBreed.visibility = View.VISIBLE
                 binding.searchBreed.isFocusable = true
                 binding.searchBreed.isIconified = false
@@ -87,6 +92,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
             }
         }
         setContactAdapter()
+        deleteItem()
         showFAB()
     }
 
@@ -104,7 +110,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
 
         binding.searchBreed.suggestionsAdapter = mAdapter
 
-        binding.searchBreed.setOnSuggestionListener(object:
+        binding.searchBreed.setOnSuggestionListener(object :
                 androidx.appcompat.widget.SearchView.OnSuggestionListener {
             override fun onSuggestionSelect(position: Int): Boolean {
                 return true
@@ -130,8 +136,6 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
 
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (contactList.contains(query)) {
-                    //TODO call contact
-                    //callContact()
                     showLongSnackError(this@MainActivity, resources.getString(R.string.call_contact),
                             ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_error)!!)
                 } else {
@@ -164,7 +168,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
     private fun setContactAdapter() {
         list = ArrayList()
         val rowNumber = dataBase.rowNumber()
-        if(rowNumber>0){
+        if (rowNumber > 0) {
             ids = dataBase.recoverIds()!!
             var minStringContact = StrongContact()
             for (i in ids.indices) {
@@ -176,38 +180,31 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
             binding.rvContact.setHasFixedSize(true)
             binding.rvContact.layoutManager = LinearLayoutManager(this)
             binding.rvContact.adapter = contactAdapter
-            val dividerItemDecoration = DividerItemDecoration( this, LinearLayoutManager.HORIZONTAL)
+            val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL)
             binding.rvContact.addItemDecoration(dividerItemDecoration)
+
+            setJSONFile(ids)
         }
         hideKeyboardFrom(this)
-        deleteItem()
-    }
-
-    private fun getMockList(): ArrayList<WeakContact> {
-        val mockList : ArrayList<WeakContact> = ArrayList()
-        mockList.add(WeakContact("JP", "Jim Moreno", "641436962", 1))
-        mockList.add(WeakContact("FM", "Luis Fernando", "643759819", 2))
-        mockList.add(WeakContact("RL", "Rosalba Latorre", "3142595590", 3))
-        return mockList
     }
 
     private fun deleteItem() {
         val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object :
-            ItemTouchHelper.SimpleCallback(
-                0,
-                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
-            ) {
+                ItemTouchHelper.SimpleCallback(
+                        0,
+                        ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+                ) {
             override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
             ): Boolean {
                 return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
                 //Left direction
-                if(swipeDir == 4){
+                if (swipeDir == 4) {
                     showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
                             ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
                     //Remove swiped item from dataBase and notify the RecyclerView
@@ -217,7 +214,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
                     //Take list position
                     list.removeAt(viewHolder.adapterPosition)
                     contactAdapter.notifyDataSetChanged()
-                }else if(swipeDir == 8){
+                } else if (swipeDir == 8) {
                     //Right direction
                     recoverPosition(list[viewHolder.adapterPosition].id)
                 }
@@ -245,8 +242,8 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         //Cast length
         val spaceFab = resources.getDimension(R.dimen.dp_64).toInt()
         val movableFloatingActionButton =
-            MovableFloatingActionButton(this, true, spaceFab)
-        movableFloatingActionButton.openFAB(this, R.drawable.radioactive_free, null, null, null)
+                MovableFloatingActionButton(this, true, spaceFab)
+        movableFloatingActionButton.openFAB(this, R.drawable.ic_coronavirus, null, null, null)
     }
 
     override fun onClickFab(xPos: Float, yPos: Float) {
@@ -271,7 +268,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
                 val cellPhone = data.extras!!.getString("cellPhone")
                 val localPhone = data.extras!!.getString("localPhone")
                 val email = data.extras!!.getString("email")
-                dataBase.addContact(name, address, cellPhone, localPhone, email )
+                dataBase.addContact(name, address, cellPhone, localPhone, email)
                 setContactAdapter()
             } else if (resul == MODIFY_CODE) {
                 val name = data?.extras!!.getString("name")
@@ -280,125 +277,143 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
                 val localPhone = data.extras!!.getString("localPhone")
                 val email = data.extras!!.getString("email")
                 val id = data.extras!!.getInt("id")
-                dataBase.modifyContact( id, name, address, cellPhone, localPhone, email )
+                dataBase.modifyContact(id, name, address, cellPhone, localPhone, email)
                 setContactAdapter()
             }
-        }else{
+        } else {
             setContactAdapter()
         }
     }
 
-    private fun getPermissions() {
-        if (allPermissionsGranted()) {
-            Timber.i("Permission granted")
-        } else {
-            requestPermissionsDexter()
+    private fun setJSONFile(iDS: IntArray) {
+        val minStringContact: Array<StrongContact?> = arrayOfNulls(iDS.size)
+        for (i in iDS.indices) {
+            minStringContact[i] = dataBase.recoverContact(iDS[i])!!
+        }
+
+
+        val gsonPretty = GsonBuilder().setPrettyPrinting().create()
+        val jsonTutsListPretty: String = gsonPretty.toJson(minStringContact)
+        try {
+            val filePath: String = applicationContext.filesDir.path.toString() + "/ContactBook.json"
+            val f = File(filePath)
+            f.writeText(jsonTutsListPretty)
+        }catch (io : java.lang.Exception){
+            Toast.makeText(this, io.message, Toast.LENGTH_LONG).show()
         }
     }
 
-    private fun allPermissionsGranted(): Boolean {
-        for (permission in this.getRequiredPermissions()!!) {
-            permission?.let {
-                if (isPermissionGranted(this, it).not()) {
-                    return false
+        private fun getPermissions() {
+            if (allPermissionsGranted()) {
+                Timber.i("Permission granted")
+            } else {
+                requestPermissionsDexter()
+            }
+        }
+
+        private fun allPermissionsGranted(): Boolean {
+            for (permission in this.getRequiredPermissions()!!) {
+                permission?.let {
+                    if (isPermissionGranted(this, it).not()) {
+                        return false
+                    }
                 }
             }
-        }
-        return true
-    }
-
-    private fun isPermissionGranted(context: Context, permission: String): Boolean {
-        if (ContextCompat.checkSelfPermission(context, permission)
-                == PackageManager.PERMISSION_GRANTED
-        ) {
-            Timber.i("Permission granted: %s", permission)
             return true
         }
-        Timber.i("Permission NOT granted: %s", permission)
-        return false
-    }
 
-    private fun getRequiredPermissions(): Array<String?>? {
-        return try {
-            val info = this.packageManager
-                    .getPackageInfo(this.packageName, PackageManager.GET_PERMISSIONS)
-            val ps = info.requestedPermissions
-            if (ps != null && ps.isNotEmpty()) {
-                ps
-            } else {
+        private fun isPermissionGranted(context: Context, permission: String): Boolean {
+            if (ContextCompat.checkSelfPermission(context, permission)
+                    == PackageManager.PERMISSION_GRANTED
+            ) {
+                Timber.i("Permission granted: %s", permission)
+                return true
+            }
+            Timber.i("Permission NOT granted: %s", permission)
+            return false
+        }
+
+        private fun getRequiredPermissions(): Array<String?>? {
+            return try {
+                val info = this.packageManager
+                        .getPackageInfo(this.packageName, PackageManager.GET_PERMISSIONS)
+                val ps = info.requestedPermissions
+                if (ps != null && ps.isNotEmpty()) {
+                    ps
+                } else {
+                    arrayOfNulls(0)
+                }
+            } catch (e: Exception) {
                 arrayOfNulls(0)
             }
-        } catch (e: Exception) {
-            arrayOfNulls(0)
         }
-    }
 
-    private fun requestPermissionsDexter() {
-        Dexter.withContext(this)
-                //Dexter.withActivity(this)
-                .withPermissions(
-                        Manifest.permission.CALL_PHONE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                )
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                        // check if all permissions are granted
-                        if (report.areAllPermissionsGranted()) {
-                            permissionsOK()
+        private fun requestPermissionsDexter() {
+            Dexter.withContext(this)
+                    //Dexter.withActivity(this)
+                    .withPermissions(
+                            Manifest.permission.CALL_PHONE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    )
+                    .withListener(object : MultiplePermissionsListener {
+                        override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                            // check if all permissions are granted
+                            if (report.areAllPermissionsGranted()) {
+                                permissionsOK()
+                            }
+                            // check for permanent denial of any permission
+                            if (report.isAnyPermissionPermanentlyDenied) {
+                                // show alert dialog navigating to Settings
+                                showSettingsDialog()
+                            }
                         }
-                        // check for permanent denial of any permission
-                        if (report.isAnyPermissionPermanentlyDenied) {
-                            // show alert dialog navigating to Settings
-                            showSettingsDialog()
+
+                        override fun onPermissionRationaleShouldBeShown(
+                                permissions: List<PermissionRequest>,
+                                token: PermissionToken
+                        ) {
+                            token.continuePermissionRequest()
                         }
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                            permissions: List<PermissionRequest>,
-                            token: PermissionToken
-                    ) {
-                        token.continuePermissionRequest()
-                    }
-                })
-                .withErrorListener { error -> Toast.makeText(applicationContext, "Error occurred! $error", Toast.LENGTH_SHORT).show() }
-                .onSameThread()
-                .check()
-    }
-
-    private fun permissionsOK() {
-        showLongSnackError(this, resources.getString(R.string.granted_access),
-                ContextCompat.getDrawable(this, R.drawable.ic_check_ok)!!)
-    }
-
-
-    /**
-     * Showing Alert Dialog with Settings option
-     * Navigates user to app settings
-     * NOTE: Keep proper title and message depending on your app
-     */
-    private fun showSettingsDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Need Permissions")
-        builder.setMessage("This app needs permission to use this feature. You can grant them in app settings.")
-        builder.setPositiveButton("GOTO SETTINGS") { dialog, _ ->
-            dialog.cancel()
-            openSettings()
+                    })
+                    .withErrorListener { error -> Toast.makeText(applicationContext, "Error occurred! $error", Toast.LENGTH_SHORT).show() }
+                    .onSameThread()
+                    .check()
         }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.cancel()
-            setResult(Activity.RESULT_CANCELED)
-            finish()
+
+        private fun permissionsOK() {
+            showLongSnackError(this, resources.getString(R.string.granted_access),
+                    ContextCompat.getDrawable(this, R.drawable.ic_check_ok)!!)
         }
-        builder.show()
-    }
 
-    // navigating user to app settings
-    private fun openSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", packageName, null)
-        intent.data = uri
-        startActivityForResult(intent, 101)
-    }
 
-}
+        /**
+         * Showing Alert Dialog with Settings option
+         * Navigates user to app settings
+         * NOTE: Keep proper title and message depending on your app
+         */
+        private fun showSettingsDialog() {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Need Permissions")
+            builder.setMessage("This app needs permission to use this feature. You can grant them in app settings.")
+            builder.setPositiveButton("GOTO SETTINGS") { dialog, _ ->
+                dialog.cancel()
+                openSettings()
+            }
+            builder.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.cancel()
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            }
+            builder.show()
+        }
+
+        // navigating user to app settings
+        private fun openSettings() {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            val uri = Uri.fromParts("package", packageName, null)
+            intent.data = uri
+            startActivityForResult(intent, 101)
+        }
+
+    }
