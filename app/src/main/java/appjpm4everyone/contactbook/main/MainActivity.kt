@@ -169,10 +169,10 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
             var minStringContact = StrongContact()
             for (i in ids.indices) {
                 minStringContact = dataBase.recoverContact(ids[i])!!
-                list.add(WeakContact("JP", minStringContact.name, minStringContact.cellPhone, ids[i]))
+                list.add(WeakContact(minStringContact.name, minStringContact.name, minStringContact.cellPhone, ids[i]))
             }
             //Set in adapter the list and interface
-            contactAdapter = ContactAdapter(list, this)
+            contactAdapter = ContactAdapter(applicationContext, list, this)
             binding.rvContact.setHasFixedSize(true)
             binding.rvContact.layoutManager = LinearLayoutManager(this)
             binding.rvContact.adapter = contactAdapter
@@ -283,6 +283,8 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
                 dataBase.modifyContact( id, name, address, cellPhone, localPhone, email )
                 setContactAdapter()
             }
+        }else{
+            setContactAdapter()
         }
     }
 
