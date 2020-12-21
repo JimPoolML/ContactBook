@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import appjpm4everyone.contactbook.R
 import appjpm4everyone.contactbook.base.BaseActivity
 import appjpm4everyone.contactbook.databinding.ActivityCreateUserBinding
+import appjpm4everyone.contactbook.utils.Utils
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -41,6 +42,40 @@ class CreateUserActivity : BaseActivity() {
             hideKeyboardFrom(this)
             finish()
         }
+
+        binding.botonAceptar.setOnClickListener {
+            hideKeyboardFrom(this)
+            setDataBaseValues()
+        }
+    }
+
+    private fun setDataBaseValues() {
+        if(validateText()){
+            val intent = Intent()
+            intent.putExtra("name", ""+binding.edtName.text)
+            intent.putExtra("address", ""+binding.edtAddress.text)
+            intent.putExtra("cellPhone", ""+binding.edtCellPhone.text)
+            intent.putExtra("localPhone", ""+binding.edtLocalPhone.text)
+            intent.putExtra("email", ""+binding.edtEmail.text)
+            setResult(Activity.RESULT_OK, intent)
+            showLongSnackError(this@CreateUserActivity, resources.getString(R.string.text_complete),
+                    ContextCompat.getDrawable(this@CreateUserActivity, R.drawable.ic_check_ok)!!)
+            finish()
+        }else{
+            showLongSnackError(this@CreateUserActivity, resources.getString(R.string.text_incomplete),
+                    ContextCompat.getDrawable(this@CreateUserActivity, R.drawable.ic_check_ok)!!)
+        }
+    }
+
+    private fun validateText(): Boolean {
+        if(binding.edtName.text.isNullOrEmpty() || binding.edtAddress.text.isNullOrEmpty() || binding.edtCellPhone.text.isNullOrEmpty()
+                || binding.edtLocalPhone.text.isNullOrEmpty() || binding.edtEmail.text.isNullOrEmpty()  ){
+            return false
+        }else if(!Utils.isValidName(binding.edtName.text) || !Utils.isValidPhoneNumber(binding.edtCellPhone.text)
+                || !Utils.isValidPhoneNumber(binding.edtLocalPhone.text) || !Utils.isValidEmail(binding.edtEmail.text)){
+            return false
+        }
+        return true
     }
 
     private fun getPermissions() {

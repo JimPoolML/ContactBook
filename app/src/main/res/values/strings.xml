@@ -23,10 +23,7 @@
     <string name="agree">Aceptar</string>
 
     <string name="granted_access">Permisos concedidos</string>
-
-
-
-
-
+    <string name="text_complete">Texto Completo</string>
+    <string name="text_incomplete">Campos incompletos o inconsistentes</string>
 
 </resources>

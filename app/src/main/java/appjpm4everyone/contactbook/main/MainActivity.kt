@@ -1,11 +1,10 @@
 package appjpm4everyone.contactbook.main
 
+import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,20 +14,27 @@ import appjpm4everyone.contactbook.adapters.ContactAdapter
 import appjpm4everyone.contactbook.base.BaseActivity
 import appjpm4everyone.contactbook.classes.WeakContact
 import appjpm4everyone.contactbook.createuser.CreateUserActivity
+import appjpm4everyone.contactbook.database.MyDataBase
 import appjpm4everyone.contactbook.databinding.ActivityMainBinding
 import appjpm4everyone.libraryFAB.CommunicateFab
 import appjpm4everyone.libraryFAB.MovableFloatingActionButton
-import com.google.android.material.internal.ContextUtils.getActivity
 
 
 class MainActivity : BaseActivity(), CommunicateFab {
 
-    private lateinit var binding : ActivityMainBinding
+    val ADD_CODE = 10
+    val MODIFY_CODE = 11
+    val DELETE_CODE = 12
 
+    private lateinit var binding : ActivityMainBinding
     //To RecyclerView
     private lateinit var contactAdapter: ContactAdapter
 
     private var list : ArrayList<WeakContact> = ArrayList()
+
+    //DataBase
+    private lateinit var dataBase : MyDataBase
+    private lateinit var ids: IntArray
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +47,9 @@ class MainActivity : BaseActivity(), CommunicateFab {
     }
 
     private fun initUI() {
+
+        //Instance dataBase
+        dataBase = MyDataBase(this)
 
         binding.btnSearch.setOnClickListener {
             if(binding.searchBreed.visibility == View.VISIBLE ){
@@ -58,14 +67,24 @@ class MainActivity : BaseActivity(), CommunicateFab {
     }
 
     private fun setContactAdapter() {
-        list = getMockList()
-        contactAdapter =
-            ContactAdapter(list)
-        binding.rvContact.setHasFixedSize(true)
-        binding.rvContact.layoutManager = LinearLayoutManager(this)
-        binding.rvContact.adapter = contactAdapter
-        val dividerItemDecoration = DividerItemDecoration( this, LinearLayoutManager.HORIZONTAL)
-        binding.rvContact.addItemDecoration(dividerItemDecoration)
+        list = ArrayList()
+
+        val rowNumber = dataBase.rowNumber()
+        if(rowNumber>0){
+            ids = dataBase.recoverIds()!!
+            for (i in ids.indices) {
+                list.add(WeakContact("JP", ids[i].toString(), ids[i].toString()))
+            }
+            contactAdapter =
+                    ContactAdapter(list)
+            binding.rvContact.setHasFixedSize(true)
+            binding.rvContact.layoutManager = LinearLayoutManager(this)
+            binding.rvContact.adapter = contactAdapter
+            val dividerItemDecoration = DividerItemDecoration( this, LinearLayoutManager.HORIZONTAL)
+            binding.rvContact.addItemDecoration(dividerItemDecoration)
+        }
+
+
         hideKeyboardFrom(this)
 
         deleteItem()
@@ -94,12 +113,18 @@ class MainActivity : BaseActivity(), CommunicateFab {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
-                showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
-                        ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
-                //Remove swiped item from list and notify the RecyclerView
-                val position = viewHolder.adapterPosition
-                list.removeAt(position)
-                contactAdapter.notifyDataSetChanged()
+                //Left direction
+                if(swipeDir == 4){
+                    showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
+                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
+                    //Remove swiped item from dataBase and notify the RecyclerView
+                    val position = viewHolder.adapterPosition
+                    dataBase.eraseContact(position)
+                    list.removeAt(position)
+                    contactAdapter.notifyDataSetChanged()
+                }
+
+
             }
         }
 
@@ -116,8 +141,44 @@ class MainActivity : BaseActivity(), CommunicateFab {
     }
 
     override fun onClickFab(xPos: Float, yPos: Float) {
-        val intent = Intent(this, CreateUserActivity::class.java)
-        startActivity(intent)
+        addContact()
     }
+
+    private fun addContact() {
+        val intent = Intent(this, CreateUserActivity::class.java)
+        startActivityForResult(intent, ADD_CODE)
+        //startActivity(intent)
+    }
+
+    /*  public void eliminaNota(View vista)
+    {
+        Intent i = new Intent(this,MuestraNota.class);
+        i.putExtra("ID",iDAct );
+
+
+    }
+*/
+    override fun onActivityResult(resul: Int, codigo: Int, data: Intent?) {
+        super.onActivityResult(resul, codigo, data)
+        if (codigo == Activity.RESULT_OK) {
+            if (resul == ADD_CODE) {
+                val name = data?.extras!!.getString("name")
+                val address = data.extras!!.getString("address")
+                val cellPhone = data.extras!!.getString("cellPhone")
+                val localPhone = data.extras!!.getString("localPhone")
+                val email = data.extras!!.getString("email")
+                dataBase.addContact(name, address, cellPhone, localPhone, email )
+                setContactAdapter()
+                // adaptador.notifyDataSetChanged(); // metodo para notificar que los datos han cambiado
+            } else {
+                /*val fecha = data.extras!!.getString("Fecha")
+                val contenido = data.extras!!.getString("Contenido")
+                val mid = data.extras!!.getInt("ID")
+                MDB.modificarNota(mid, contenido, fecha)
+                rellenaLista()*/
+            }
+        }
+    }
+
 
 }

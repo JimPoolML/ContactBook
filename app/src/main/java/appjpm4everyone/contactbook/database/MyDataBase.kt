@@ -18,7 +18,6 @@ import appjpm4everyone.contactbook.classes.StrongContact.StrongContact.COL_NAME
 class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS, null, VERSION_BASEDATOS) {
 
     companion object {
-
         private const val VERSION_BASEDATOS = 1
         private const val NOMBRE_BASEDATOS = "ContactBook.db"
         private const val TABLE_NAME = "nameContact"
@@ -39,7 +38,7 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
         onCreate(db)
     }
 
-    public fun addContact(name: String, address: String, cellPhone: String, localPhone: String, email: String) {
+    fun addContact(name: String?, address: String?, cellPhone: String?, localPhone: String?, email: String?) {
         val db = writableDatabase
         val values = ContentValues()
         if (db != null) {
@@ -52,7 +51,6 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
             db.insert(TABLE_NAME, null, values)
         }
         db.close()
-
     }
 
     fun modifyContact(id: Int, name: String, address: String, cellPhone: String, localPhone: String, email: String) {
@@ -65,14 +63,14 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
             values.put("localPhone", localPhone)
             values.put("email", email)
             //update data into DB
-            db.update(TABLE_NAME, values, "_id=$id", null)
+            db.update(TABLE_NAME, values, "$COL_ID=$id", null)
         }
         db.close()
     }
 
     fun eraseContact(id: Int) {
         val db = writableDatabase
-        db?.delete(TABLE_NAME, "_id=$id", null)
+        db?.delete(TABLE_NAME, "$COL_ID=$id", null)
         db.close()
         /* como en insert se puede utilizar db.execSQL de la sigueinte manera
         Eliminar un registro con execSQL(), utilizando argumentos
@@ -85,8 +83,8 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
     @SuppressLint("Recycle")
     fun recoverContact(id: Int): StrongContact? {
         val db = readableDatabase
-        val recoverValues = arrayOf("_id", "name", "address", "cellPhone", "localPhone", "email")
-        val c = db.query(TABLE_NAME, recoverValues, "_id=$id", null, null, null, null, null)
+        val recoverValues = arrayOf("$COL_ID", "name", "address", "cellPhone", "localPhone", "email")
+        val c = db.query(TABLE_NAME, recoverValues, "$COL_ID=$id", null, null, null, null, null)
         c?.moveToFirst()
         val strongContact = StrongContact(c!!.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5))
         db.close()
@@ -97,7 +95,7 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
 
     fun recoverContactCursor(): Cursor? {
         val db = readableDatabase
-        val recoverValues = arrayOf("_id", "name", "cellPhone")
+        val recoverValues = arrayOf("$COL_ID", "name", "cellPhone")
         /*query(table, columns, selection, selectionArgs, groupBy, having, orderBy, limit)
          Con este método conseguimos leer un registro de la tabla.
          Como primer parámetro "table" nos pide el nombre de la tabla
@@ -118,7 +116,7 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
         val dataId: IntArray
         var i: Int
         val db = readableDatabase
-        val cursor = db.rawQuery("SELECT _id FROM NAME_TABLE", null)
+        val cursor = db.rawQuery("SELECT $COL_ID FROM $TABLE_NAME", null)
         if (cursor.count > 0) {
             dataId = IntArray(cursor.count)
             i = 0
