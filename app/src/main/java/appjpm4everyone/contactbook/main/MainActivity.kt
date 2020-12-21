@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import appjpm4everyone.contactbook.R
 import appjpm4everyone.contactbook.adapters.ContactAdapter
 import appjpm4everyone.contactbook.base.BaseActivity
+import appjpm4everyone.contactbook.classes.StrongContact
 import appjpm4everyone.contactbook.classes.WeakContact
 import appjpm4everyone.contactbook.createuser.CreateUserActivity
 import appjpm4everyone.contactbook.database.MyDataBase
@@ -68,12 +69,13 @@ class MainActivity : BaseActivity(), CommunicateFab {
 
     private fun setContactAdapter() {
         list = ArrayList()
-
         val rowNumber = dataBase.rowNumber()
         if(rowNumber>0){
             ids = dataBase.recoverIds()!!
+            var minStringContact = StrongContact()
             for (i in ids.indices) {
-                list.add(WeakContact("JP", ids[i].toString(), ids[i].toString()))
+                minStringContact = dataBase.recoverContact(ids[i])!!
+                list.add(WeakContact("JP", minStringContact.name, minStringContact.cellPhone, ids[i]))
             }
             contactAdapter =
                     ContactAdapter(list)
@@ -83,18 +85,15 @@ class MainActivity : BaseActivity(), CommunicateFab {
             val dividerItemDecoration = DividerItemDecoration( this, LinearLayoutManager.HORIZONTAL)
             binding.rvContact.addItemDecoration(dividerItemDecoration)
         }
-
-
         hideKeyboardFrom(this)
-
         deleteItem()
     }
 
     private fun getMockList(): ArrayList<WeakContact> {
         val mockList : ArrayList<WeakContact> = ArrayList()
-        mockList.add(WeakContact("JP", "Jim Moreno", "641436962"))
-        mockList.add(WeakContact("FM", "Luis Fernando", "643759819"))
-        mockList.add(WeakContact("RL", "Rosalba Latorre", "3142595590"))
+        mockList.add(WeakContact("JP", "Jim Moreno", "641436962", 1))
+        mockList.add(WeakContact("FM", "Luis Fernando", "643759819", 2))
+        mockList.add(WeakContact("RL", "Rosalba Latorre", "3142595590", 3))
         return mockList
     }
 
@@ -118,9 +117,10 @@ class MainActivity : BaseActivity(), CommunicateFab {
                     showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
                             ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)
                     //Remove swiped item from dataBase and notify the RecyclerView
-                    val position = viewHolder.adapterPosition
+                    //val position = viewHolder.adapterPosition
+                    val position = list[viewHolder.adapterPosition].id
                     dataBase.eraseContact(position)
-                    list.removeAt(position)
+                    list.removeAt(viewHolder.adapterPosition)
                     contactAdapter.notifyDataSetChanged()
                 }
 
