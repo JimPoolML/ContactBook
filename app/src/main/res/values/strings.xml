@@ -29,5 +29,6 @@
     <string name="text_incomplete">Campos incompletos o inconsistentes</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="agendar">Agendar</string>
 
 </resources>

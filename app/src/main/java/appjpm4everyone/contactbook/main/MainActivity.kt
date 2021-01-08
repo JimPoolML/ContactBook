@@ -92,10 +92,6 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton, OnFragmentCont
         val fm: FragmentManager = supportFragmentManager
         contactFragment = fm.findFragmentById(R.id.fragmentContact) as ContactFragment
 
-        /*val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.fragmentContact, ContactFragment())
-        fragmentTransaction.commit()*/
-
         var frg: Fragment = supportFragmentManager.findFragmentById(R.id.fragmentContact)!!
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.detach(frg)
