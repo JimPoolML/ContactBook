@@ -11,7 +11,7 @@ import appjpm4everyone.contactbook.databinding.ItemContactsBinding
 import appjpm4everyone.contactbook.utils.Utils
 import kotlinx.android.synthetic.main.item_contacts.view.*
 
-class ContactAdapter (private  val context: Context, private val weakContact: List<WeakContact>, private var onGetButton: OnGetButton
+class ContactAdapter(private val context: Context, private val weakContact: List<WeakContact>, private var onGetButton: OnGetButton
 ) : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

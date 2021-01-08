@@ -73,6 +73,26 @@ tools:context=".main.MainActivity">
             android:layout_height="wrap_content"
             android:background="@android:color/white">
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintGuide_percent="0.5"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragmentContact"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@id/guideline"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                class="appjpm4everyone.contactbook.main.ContactFragment"/>
+
+            <!--
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvContact"
                 android:layout_width="0dp"
@@ -95,7 +115,7 @@ tools:context=".main.MainActivity">
                 android:visibility="gone"
                 app:queryHint="@string/search_contact"
                 />
-
+            -->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

@@ -5,22 +5,17 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.provider.Settings
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.cursoradapter.widget.SimpleCursorAdapter
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import appjpm4everyone.contactbook.R
 import appjpm4everyone.contactbook.adapters.ContactAdapter
 import appjpm4everyone.contactbook.adapters.OnGetButton
@@ -42,7 +37,7 @@ import timber.log.Timber
 import java.io.File
 
 
-class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
+class MainActivity : BaseActivity(), CommunicateFab, OnGetButton, OnFragmentContactListener {
 
     private val ADD_CODE = 10
     private val MODIFY_CODE = 11
@@ -62,9 +57,12 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
     private lateinit var dataBase: MyDataBase
     private lateinit var ids: IntArray
 
+    //To Fragments
+    private lateinit var contactFragment: ContactFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        //setContentView(R.layout.activity_main)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -79,25 +77,34 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         //Instance dataBase
         dataBase = MyDataBase(this)
 
+        loadFragments()
+
         binding.btnSearch.setOnClickListener {
-            if (binding.searchBreed.visibility == View.VISIBLE) {
-                binding.searchBreed.visibility = View.GONE
-                binding.searchBreed.clearFocus()
-            } else {
-                binding.searchBreed.visibility = View.VISIBLE
-                binding.searchBreed.isFocusable = true
-                binding.searchBreed.isIconified = false
-                binding.searchBreed.requestFocusFromTouch()
-                setSearchView()
-            }
+            contactFragment.showSearchContact()
         }
-        setContactAdapter()
-        deleteItem()
+        /*setContactAdapter()
+        deleteItem()*/
         showFAB()
     }
 
+    private fun loadFragments() {
+        //Instance fragment
+        val fm: FragmentManager = supportFragmentManager
+        contactFragment = fm.findFragmentById(R.id.fragmentContact) as ContactFragment
+
+        /*val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.fragmentContact, ContactFragment())
+        fragmentTransaction.commit()*/
+
+        var frg: Fragment = supportFragmentManager.findFragmentById(R.id.fragmentContact)!!
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.detach(frg)
+        fragmentTransaction.attach(frg)
+        fragmentTransaction.commit()
+    }
+
     private fun setSearchView() {
-        binding.searchBreed.clearFocus()
+        //binding.searchBreed.clearFocus()
 
         contactList = arrayOfNulls(list.size)
         for (i in list.indices) {
@@ -108,7 +115,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         val to = intArrayOf(android.R.id.text1)
         mAdapter = SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, android.widget.CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)
 
-        binding.searchBreed.suggestionsAdapter = mAdapter
+       /* binding.searchBreed.suggestionsAdapter = mAdapter
 
         binding.searchBreed.setOnSuggestionListener(object :
                 androidx.appcompat.widget.SearchView.OnSuggestionListener {
@@ -146,7 +153,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
                 return false
             }
 
-        })
+        })*/
     }
 
     private fun callContact(callNumber: String) {
@@ -166,7 +173,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
     }
 
     private fun setContactAdapter() {
-        list = ArrayList()
+        /*list = ArrayList()
         val rowNumber = dataBase.rowNumber()
         if (rowNumber > 0) {
             ids = dataBase.recoverIds()!!
@@ -184,12 +191,13 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
             binding.rvContact.addItemDecoration(dividerItemDecoration)
 
             setJSONFile(ids)
-        }
+        }*/
+        contactFragment.setContactAdapter()
         hideKeyboardFrom(this)
     }
 
     private fun deleteItem() {
-        val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object :
+        /*val simpleItemTouchCallback: ItemTouchHelper.SimpleCallback = object :
                 ItemTouchHelper.SimpleCallback(
                         0,
                         ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
@@ -222,10 +230,10 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         }
 
         val itemTouchHelper = ItemTouchHelper(simpleItemTouchCallback)
-        itemTouchHelper.attachToRecyclerView(binding.rvContact)
+        itemTouchHelper.attachToRecyclerView(binding.rvContact)*/
     }
 
-    private fun recoverPosition(id: Int) {
+    /*private fun recoverPosition(id: Int) {
         val i = Intent(this, CreateUserActivity::class.java)
         i.putExtra("modify", true)
         i.putExtra("id", id)
@@ -236,7 +244,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         i.putExtra("localPhone", minStrongContact.localPhone)
         i.putExtra("email", minStrongContact.email)
         startActivityForResult(i, MODIFY_CODE)
-    }
+    }*/
 
     private fun showFAB() {
         //Cast length
@@ -285,7 +293,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         }
     }
 
-    private fun setJSONFile(iDS: IntArray) {
+    /*private fun setJSONFile(iDS: IntArray) {
         val minStringContact: Array<StrongContact?> = arrayOfNulls(iDS.size)
         for (i in iDS.indices) {
             minStringContact[i] = dataBase.recoverContact(iDS[i])!!
@@ -302,7 +310,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
         }catch (io : java.lang.Exception){
             Toast.makeText(this, io.message, Toast.LENGTH_LONG).show()
         }
-    }
+    }*/
 
         private fun getPermissions() {
             if (allPermissionsGranted()) {
@@ -417,4 +425,47 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
             startActivityForResult(intent, 101)
         }
 
+    //Fragment listeners
+    override fun onCallContact(callNumber: String) {
+        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$callNumber"))
+        startActivity(intent)
     }
+
+    override fun showLongSnackErrorFragment(message: String, icon: Int) {
+        showLongSnackError(this@MainActivity, message,
+            ContextCompat.getDrawable(this@MainActivity, icon)!!)
+    }
+
+    override fun setJSONFile(iDS: IntArray) {
+        val minStringContact: Array<StrongContact?> = arrayOfNulls(iDS.size)
+        for (i in iDS.indices) {
+            minStringContact[i] = dataBase.recoverContact(iDS[i])!!
+        }
+
+
+        val gsonPretty = GsonBuilder().setPrettyPrinting().create()
+        val jsonTutsListPretty: String = gsonPretty.toJson(minStringContact)
+        try {
+            val filePath: String = applicationContext.filesDir.path.toString() + "/ContactBook.json"
+            val f = File(filePath)
+            f.writeText(jsonTutsListPretty)
+            Timber.e(filePath)
+        }catch (io : java.lang.Exception){
+            Toast.makeText(this, io.message, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun recoverPosition(id: Int) {
+        val i = Intent(this, CreateUserActivity::class.java)
+        i.putExtra("modify", true)
+        i.putExtra("id", id)
+        val minStrongContact: StrongContact = dataBase.recoverContact(id)!!
+        i.putExtra("name", minStrongContact.name)
+        i.putExtra("address", minStrongContact.address)
+        i.putExtra("cellPhone", minStrongContact.cellPhone)
+        i.putExtra("localPhone", minStrongContact.localPhone)
+        i.putExtra("email", minStrongContact.email)
+        startActivityForResult(i, MODIFY_CODE)
+    }
+
+}
