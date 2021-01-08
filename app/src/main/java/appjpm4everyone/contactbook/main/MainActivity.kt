@@ -298,6 +298,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnGetButton {
             val filePath: String = applicationContext.filesDir.path.toString() + "/ContactBook.json"
             val f = File(filePath)
             f.writeText(jsonTutsListPretty)
+            Timber.e(filePath)
         }catch (io : java.lang.Exception){
             Toast.makeText(this, io.message, Toast.LENGTH_LONG).show()
         }

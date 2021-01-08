@@ -27,5 +27,7 @@
     <string name="granted_access">Permisos concedidos</string>
     <string name="text_complete">Texto Completo</string>
     <string name="text_incomplete">Campos incompletos o inconsistentes</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
