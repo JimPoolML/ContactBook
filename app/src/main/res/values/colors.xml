@@ -26,6 +26,7 @@
     <color name="gray_ligth">#BEBEBE</color>
     <color name="yelow_frs">#FFA529</color>
     <color name="blue_frs">#243B72</color>
+    <color name="gray_hint">#6600102E</color>
 
     <color name="colorBlackTextLight">#3F3F3F</color>
     <color name="colorBlackTextLight80">#803F3F3F</color>

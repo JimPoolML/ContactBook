@@ -2,6 +2,8 @@ package appjpm4everyone.contactbook.base
 
 import android.app.Activity
 import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -24,6 +26,22 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun hideProgress() {
         mProgressDialog.hideProgress()
     }*/
+
+    fun delayMs(millS: Long){
+        // Use
+        val handler = Handler()
+        handler.postDelayed({
+        }, millS)
+    }
+
+    fun delayMsView(millS: Long, view: View){
+        // Use
+        view.isClickable = false
+        val handler = Handler()
+        handler.postDelayed({
+            view.isClickable = true
+        }, millS)
+    }
 
     fun showShortSnackError(activity: Activity, message: String, icon: Drawable) {
         showSnack(activity, message, icon, Snacky.LENGTH_SHORT)

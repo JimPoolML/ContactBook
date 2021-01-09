@@ -230,10 +230,6 @@ class ContactFragment : Fragment(), OnGetButton {
                 //Left direction
                 if (swipeDir == 4) {
                     listener?.showLongSnackErrorFragment(resources.getString(R.string.delete_contact), R.drawable.ic_delete)
-                    /*showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
-                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)*/
-                    //Remove swiped item from dataBase and notify the RecyclerView
-                    //take database position
                     val position = list[viewHolder.adapterPosition].id
                     dataBase.eraseContact(position)
                     //Take list position

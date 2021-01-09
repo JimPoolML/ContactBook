@@ -1,8 +1,11 @@
 package appjpm4everyone.contactbook.scheduledate
 
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
+import android.app.TimePickerDialog
+import android.app.TimePickerDialog.OnTimeSetListener
 import android.database.Cursor
 import android.database.MatrixCursor
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.view.View
@@ -13,18 +16,18 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import appjpm4everyone.contactbook.R
-import appjpm4everyone.contactbook.adapters.ContactAdapter
 import appjpm4everyone.contactbook.adapters.OnGetButton
 import appjpm4everyone.contactbook.adapters.ScheduleAdapter
 import appjpm4everyone.contactbook.base.BaseActivity
 import appjpm4everyone.contactbook.classes.ScheduleTable
-import appjpm4everyone.contactbook.classes.StrongContact
-import appjpm4everyone.contactbook.classes.WeakContact
-import appjpm4everyone.contactbook.database.MyDataBase
 import appjpm4everyone.contactbook.database.ScheduleDataBase
-import appjpm4everyone.contactbook.databinding.ActivityMainBinding
 import appjpm4everyone.contactbook.databinding.ActivityScheduleBinding
-import appjpm4everyone.contactbook.main.MainActivity
+import appjpm4everyone.contactbook.utils.CustomAlertDialog
+import kotlinx.android.synthetic.main.view_custom_alert_dialog.view.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 class ScheduleActivity : BaseActivity(), OnGetButton {
 
@@ -46,6 +49,12 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
     private lateinit var dataBase: ScheduleDataBase
     private lateinit var ids: IntArray
 
+    //datePicker
+    lateinit var customAlertDialog: CustomAlertDialog
+    var isShowing: Boolean = false
+    private lateinit var myCalendar: Calendar
+    private var id = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_schedule)
@@ -59,10 +68,106 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
         //Instance dataBase
         dataBase = ScheduleDataBase(this)
 
+        customAlertDialog = CustomAlertDialog()
+
         setSearchView()
         showSearchSchedule()
         setScheduleAdapter()
         deleteItem()
+
+        binding.btnSchedule.setOnClickListener {
+            onShowDataPicker(false)
+        }
+    }
+
+
+    private fun onShowDataPicker(isModify: Boolean) {
+        if(!isShowing){
+            isShowing = true
+            customAlertDialog.show(this)
+        }
+
+        if (::customAlertDialog.isInitialized && customAlertDialog.dialog.isShowing) {
+
+            customAlertDialog.view.btn_Cancel.setOnClickListener {
+                hideKeyboardFrom(this)
+                customAlertDialog.hideProgress()
+                isShowing = false
+                delayMs(1000)
+            }
+
+            myCalendar = Calendar.getInstance()
+
+            //val editDate = customAlertDialog.view.edt_date
+            val date =
+                OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                    myCalendar.set(Calendar.YEAR, year)
+                    myCalendar.set(Calendar.MONTH, monthOfYear)
+                    myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                    updateLabel()
+                }
+
+            val dateTime =
+                OnTimeSetListener { _, hourOfDay, minute ->
+                    myCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                    myCalendar.set(Calendar.MINUTE, minute)
+                    updateLabelTime()
+                }
+
+            customAlertDialog.view.edt_date.setOnClickListener {
+                DatePickerDialog(
+                    this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    myCalendar.get(Calendar.DAY_OF_MONTH)
+                ).show()
+            }
+
+            customAlertDialog.view.edt_clock.setOnClickListener{
+                val timePickerDialog= TimePickerDialog(
+                    this, dateTime, myCalendar.get(Calendar.HOUR_OF_DAY),
+                    myCalendar.get(Calendar.MINUTE), true)
+                timePickerDialog.setTitle("Seleccione hora")
+                timePickerDialog.show()
+
+            }
+
+            customAlertDialog.view.btn_Send.setOnClickListener {
+                hideKeyboardFrom(this)
+                if(customAlertDialog.view.edt_event.text.isNullOrEmpty() || customAlertDialog.view.edt_date.text.isNullOrEmpty() || customAlertDialog.view.edt_clock.text.isNullOrEmpty()  ){
+                    showLongSnackError(this,  resources.getString(R.string.text_incomplete),
+                        ContextCompat.getDrawable(this, R.drawable.ic_error)!!)
+                }else{
+                    customAlertDialog.hideProgress()
+                    isShowing = false
+                    if(isModify){
+                        modifySchedule(customAlertDialog.view.edt_event.text.toString(), customAlertDialog.view.edt_date.text.toString(), customAlertDialog.view.edt_clock.text.toString() )
+                    }else{
+                        addSchedule()
+                    }
+                }
+                delayMs(1000)
+            }
+        }
+    }
+
+    private fun addSchedule() {
+        val event = customAlertDialog.view.edt_event.text.toString()
+        val date = customAlertDialog.view.edt_date.text.toString()
+        val clock = customAlertDialog.view.edt_clock.text.toString()
+        dataBase.addContact(event, date, clock)
+        setScheduleAdapter()
+    }
+
+    private fun updateLabel() {
+        val myFormat = "MM/dd/yy" //In which you need put here
+        val sdf = SimpleDateFormat(myFormat, Locale.US)
+        customAlertDialog.view.edt_date.setText(sdf.format(myCalendar.time))
+    }
+
+    private fun updateLabelTime() {
+        val myFormat = "HH:mm" //In which you need put here
+        val sdf = SimpleDateFormat(myFormat, Locale.US)
+        customAlertDialog.view.edt_clock.setText(sdf.format(myCalendar.time))
     }
 
     private fun showSearchSchedule() {
@@ -156,17 +261,14 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
 
     private fun setScheduleAdapter() {
         list = ArrayList()
-        /*val rowNumber = dataBase.rowNumber()
+        val rowNumber = dataBase.rowNumber()
         if (rowNumber > 0) {
             ids = dataBase.recoverIds()!!
             var scheduleTable = ScheduleTable()
-            *//*for (i in ids.indices) {
+            for (i in ids.indices) {
                 scheduleTable = dataBase.recoverContact(ids[i])!!
                 list.add(ScheduleTable(ids[i], scheduleTable.event, scheduleTable.date, scheduleTable.clock))
-            }*//*
-            list.add(ScheduleTable(0, "bornDate","1989/08/20", "12:00" ))
-            list.add(ScheduleTable(1, "bachellor","2006/11/30", "11:00" ))
-            list.add(ScheduleTable(2, "Dad","2020/12/20", "11:00" ))
+            }
             //Set in adapter the list and interface
             scheduleAdapter = ScheduleAdapter(this, list, this)
             binding.rvSchedule.setHasFixedSize(true)
@@ -174,9 +276,9 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
             binding.rvSchedule.adapter = scheduleAdapter
             val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL)
             binding.rvSchedule.addItemDecoration(dividerItemDecoration)
-        }*/
+        }
 
-        list.add(ScheduleTable(0, "bornDate","1989/08/20", "12:00" ))
+        /*list.add(ScheduleTable(0, "bornDate","1989/08/20", "12:00" ))
         list.add(ScheduleTable(1, "bachellor","2006/11/30", "11:00" ))
         list.add(ScheduleTable(2, "Dad","2020/12/20", "11:00" ))
         //Set in adapter the list and interface
@@ -185,7 +287,7 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
         binding.rvSchedule.layoutManager = LinearLayoutManager(this)
         binding.rvSchedule.adapter = scheduleAdapter
         val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL)
-        binding.rvSchedule.addItemDecoration(dividerItemDecoration)
+        binding.rvSchedule.addItemDecoration(dividerItemDecoration)*/
     }
 
     private fun deleteItem() {
@@ -209,19 +311,13 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
                         this@ScheduleActivity, resources.getString(R.string.delete_event),
                         ContextCompat.getDrawable(this@ScheduleActivity, R.drawable.ic_delete)!!
                     )
-                    /*showLongSnackError(this@MainActivity, resources.getString(R.string.delete_contact),
-                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_delete)!!)*/
-                    //Remove swiped item from dataBase and notify the RecyclerView
                     //take database position
                     val position = list[viewHolder.adapterPosition].id
                     dataBase.eraseContact(position)
                     //Take list position
                     list.removeAt(viewHolder.adapterPosition)
                     scheduleAdapter.notifyDataSetChanged()
-                } /*else if (swipeDir == 8) {
-                    //Right direction
-                    recoverPosition(list[viewHolder.adapterPosition].id)
-                }*/
+                }
             }
         }
 
@@ -233,9 +329,34 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
         //listener?.recoverPosition(id)
     }
 
+    private fun modifySchedule(
+        event: String,
+        date: String,
+        clock: String
+    ) {
+        dataBase.modifyContact(id+1, event, date, clock)
+        setScheduleAdapter()
+
+        /*list = ArrayList()
+        val rowNumber = dataBase.rowNumber()
+        if (rowNumber > 0) {
+            ids = dataBase.recoverIds()!!
+            var scheduleTable: ArrayList<ScheduleTable> = ArrayList()
+            for (i in ids.indices) {
+                scheduleTable.add(dataBase.recoverContact(ids[i])!!)
+            }
+            //Set data into 2nd fragment
+            if(scheduleTable[id]!=null){
+                val schedule = scheduleTable[id]
+                dataBase.modifyContact(id, schedule.event, schedule.date, schedule.clock)
+                setScheduleAdapter()
+            }
+        }*/
+    }
 
 
     override fun onClickButton(phoneNumber: String, id: Int) {
-        TODO("Not yet implemented")
+        this.id= id-1
+        onShowDataPicker(true)
     }
 }

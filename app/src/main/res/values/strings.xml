@@ -30,10 +30,16 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="agendar">Agendar</string>
+
+    <string name="agendar">\u0020\u0020Agendar\u0020\u0020</string>
     <string name="llamar">Llamar</string>
     <string name="example_task">Example Task</string>
     <string name="delete_event">Evento eliminado</string>
     <string name="not_found_event">Evento no encontrado</string>
+
+    <string name="hint_event">Evento</string>
+    <string name="hint_date">Fecha</string>
+    <string name="hint_clock">Hora</string>
+    <string name="btn_cancel">Cancelar</string>
 
 </resources>
