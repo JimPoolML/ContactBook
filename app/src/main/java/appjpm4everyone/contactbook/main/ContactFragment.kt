@@ -1,6 +1,7 @@
 package appjpm4everyone.contactbook.main
 
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.os.Bundle
@@ -19,8 +20,10 @@ import appjpm4everyone.contactbook.adapters.ContactAdapter
 import appjpm4everyone.contactbook.adapters.OnGetButton
 import appjpm4everyone.contactbook.classes.StrongContact
 import appjpm4everyone.contactbook.classes.WeakContact
+import appjpm4everyone.contactbook.createuser.CreateUserActivity
 import appjpm4everyone.contactbook.database.MyDataBase
 import appjpm4everyone.contactbook.databinding.FragmentContactBinding
+import appjpm4everyone.contactbook.scheduledate.ScheduleActivity
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -88,7 +91,15 @@ class ContactFragment : Fragment(), OnGetButton {
         showSearchContact()
         setContactAdapter()
         deleteItem()
+        setSchedule()
 
+    }
+
+    private fun setSchedule() {
+        binding.btnAgenda.setOnClickListener {
+            val intent = Intent(context, ScheduleActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun showSearchContact() {
