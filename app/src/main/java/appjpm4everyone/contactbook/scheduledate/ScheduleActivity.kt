@@ -31,9 +31,6 @@ import kotlin.collections.ArrayList
 
 class ScheduleActivity : BaseActivity(), OnGetButton {
 
-    private val ADD_CODE = 10
-    private val MODIFY_CODE = 11
-
     private lateinit var binding: ActivityScheduleBinding
 
     //To RecyclerView
@@ -57,7 +54,6 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_schedule)
 
         binding = ActivityScheduleBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -78,6 +74,11 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
         binding.btnSchedule.setOnClickListener {
             onShowDataPicker(false)
         }
+
+        binding.btnSearch.setOnClickListener {
+            finish()
+        }
+
     }
 
 
@@ -277,17 +278,6 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
             val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL)
             binding.rvSchedule.addItemDecoration(dividerItemDecoration)
         }
-
-        /*list.add(ScheduleTable(0, "bornDate","1989/08/20", "12:00" ))
-        list.add(ScheduleTable(1, "bachellor","2006/11/30", "11:00" ))
-        list.add(ScheduleTable(2, "Dad","2020/12/20", "11:00" ))
-        //Set in adapter the list and interface
-        scheduleAdapter = ScheduleAdapter(this, list, this)
-        binding.rvSchedule.setHasFixedSize(true)
-        binding.rvSchedule.layoutManager = LinearLayoutManager(this)
-        binding.rvSchedule.adapter = scheduleAdapter
-        val dividerItemDecoration = DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL)
-        binding.rvSchedule.addItemDecoration(dividerItemDecoration)*/
     }
 
     private fun deleteItem() {
@@ -325,10 +315,6 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
         itemTouchHelper.attachToRecyclerView(binding.rvSchedule)
     }
 
-    private fun recoverPosition(id: Int) {
-        //listener?.recoverPosition(id)
-    }
-
     private fun modifySchedule(
         event: String,
         date: String,
@@ -336,22 +322,6 @@ class ScheduleActivity : BaseActivity(), OnGetButton {
     ) {
         dataBase.modifyContact(id+1, event, date, clock)
         setScheduleAdapter()
-
-        /*list = ArrayList()
-        val rowNumber = dataBase.rowNumber()
-        if (rowNumber > 0) {
-            ids = dataBase.recoverIds()!!
-            var scheduleTable: ArrayList<ScheduleTable> = ArrayList()
-            for (i in ids.indices) {
-                scheduleTable.add(dataBase.recoverContact(ids[i])!!)
-            }
-            //Set data into 2nd fragment
-            if(scheduleTable[id]!=null){
-                val schedule = scheduleTable[id]
-                dataBase.modifyContact(id, schedule.event, schedule.date, schedule.clock)
-                setScheduleAdapter()
-            }
-        }*/
     }
 
 

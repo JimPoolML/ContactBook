@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".scheduledate.ScheduleActivity"></activity>
+        <activity android:name=".scheduledate.ScheduleActivity"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".createuser.CreateUserActivity"
             tools:ignore="LockedOrientationActivity" />

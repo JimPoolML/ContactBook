@@ -33,6 +33,7 @@
 
     <string name="agendar">\u0020\u0020Agendar\u0020\u0020</string>
     <string name="llamar">Llamar</string>
+    <string name="create_schedule">Crear Horario</string>
     <string name="example_task">Example Task</string>
     <string name="delete_event">Evento eliminado</string>
     <string name="not_found_event">Evento no encontrado</string>
