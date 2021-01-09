@@ -1,6 +1,7 @@
 package appjpm4everyone.contactbook.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,7 @@ class ContactAdapter(private val context: Context, private val weakContact: List
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = weakContact[position]
         holder.setContactItem(item.initials, item.name, item.number, context, position)
-        holder.setContactClick(item.number.trim(), onGetButton )
+        holder.setContactClick(item.number.trim(), item.id, onGetButton )
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,9 +42,14 @@ class ContactAdapter(private val context: Context, private val weakContact: List
             itemView.rv_number.text = number
         }
 
-        fun setContactClick(number: String, onGetButton: OnGetButton) {
+        fun setContactClick(
+            number: String,
+            id: Int,
+            onGetButton: OnGetButton
+        ) {
             itemView.rv_constraint.setOnClickListener {
-                onGetButton.onClickButton(number)
+                Log.d("my id is: ", id.toString())
+                onGetButton.onClickButton(number, id)
             }
         }
     }

@@ -136,7 +136,6 @@ class ContactFragment : Fragment(), OnGetButton {
                 val txt = cursor.getString(cursor.getColumnIndex("contactsFound"))
                 binding.searchContactFragment.setQuery(txt, false)
                 callContact(list[position].number.trim())
-
                 (activity as MainActivity).hideKeyboardFrom(activity as MainActivity)
                 return true
             }
@@ -156,15 +155,11 @@ class ContactFragment : Fragment(), OnGetButton {
                         resources.getString(R.string.call_contact),
                         R.drawable.ic_error
                     )
-                    /*showLongSnackError(this@MainActivity, resources.getString(R.string.call_contact),
-                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_error)!!)*/
                 } else {
                     listener?.showLongSnackErrorFragment(
                         resources.getString(R.string.not_found_contact),
                         R.drawable.ic_error
                     )
-                    /*showLongSnackError(this@MainActivity, resources.getString(R.string.not_found_contact),
-                            ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_error)!!)*/
                 }
                 (activity as MainActivity).hideKeyboardFrom(activity as MainActivity)
                 return false
@@ -246,20 +241,10 @@ class ContactFragment : Fragment(), OnGetButton {
 
     private fun recoverPosition(id: Int) {
         listener?.recoverPosition(id)
-       /* val i = Intent(this, CreateUserActivity::class.java)
-        i.putExtra("modify", true)
-        i.putExtra("id", id)
-        val minStrongContact: StrongContact = dataBase.recoverContact(id)!!
-        i.putExtra("name", minStrongContact.name)
-        i.putExtra("address", minStrongContact.address)
-        i.putExtra("cellPhone", minStrongContact.cellPhone)
-        i.putExtra("localPhone", minStrongContact.localPhone)
-        i.putExtra("email", minStrongContact.email)
-        startActivityForResult(i, MODIFY_CODE)*/
     }
 
     private fun callContact(callNumber: String) {
-        listener?.onCallContact(callNumber)
+        listener?.onCallContact(callNumber, id)
     }
 
     override fun onAttach(context: Context) {
@@ -274,8 +259,8 @@ class ContactFragment : Fragment(), OnGetButton {
         listener = null
     }
 
-    override fun onClickButton(phoneNumber: String) {
-        listener?.onCallContact(phoneNumber)
+    override fun onClickButton(phoneNumber: String, id: Int) {
+        listener?.onCallContact(phoneNumber,id)
     }
 
     companion object {

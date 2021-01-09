@@ -1,9 +1,12 @@
 package appjpm4everyone.contactbook.classes
 
+import android.os.Parcelable
 import android.provider.BaseColumns
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class StrongContact (
         @SerializedName(value = "id", alternate = ["Id"])
         @Expose
@@ -23,7 +26,7 @@ data class StrongContact (
         @SerializedName(value = "email", alternate = ["Email"])
         @Expose
         var email: String
-){
+) : Parcelable {
     constructor() : this(0,"", "", "", "", "" )
 
         // Table contents are grouped together in an anonymous object.
