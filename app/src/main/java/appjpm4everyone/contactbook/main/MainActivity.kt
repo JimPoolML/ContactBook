@@ -183,7 +183,8 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 val cellPhone = data.extras!!.getString("cellPhone")
                 val localPhone = data.extras!!.getString("localPhone")
                 val email = data.extras!!.getString("email")
-                dataBase.addContact(name, address, cellPhone, localPhone, email)
+                val image = data.extras!!.getString("image")
+                dataBase.addContact(name, address, cellPhone, localPhone, email, image)
                 setContactAdapter()
             } else if (resul == MODIFY_CODE) {
                 val name = data?.extras!!.getString("name")
@@ -191,8 +192,9 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 val cellPhone = data.extras!!.getString("cellPhone")
                 val localPhone = data.extras!!.getString("localPhone")
                 val email = data.extras!!.getString("email")
+                val image = data.extras!!.getString("image")
                 val id = data.extras!!.getInt("id")
-                dataBase.modifyContact(id, name, address, cellPhone, localPhone, email)
+                dataBase.modifyContact(id, name, address, cellPhone, localPhone, email, image)
                 setContactAdapter()
             }
         } else {
@@ -253,6 +255,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
             )
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport) {
@@ -372,6 +375,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
         i.putExtra("cellPhone", minStrongContact.cellPhone)
         i.putExtra("localPhone", minStrongContact.localPhone)
         i.putExtra("email", minStrongContact.email)
+        i.putExtra("image", minStrongContact.image)
         startActivityForResult(i, MODIFY_CODE)
     }
 

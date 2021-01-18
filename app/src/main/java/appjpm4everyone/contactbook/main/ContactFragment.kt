@@ -20,7 +20,6 @@ import appjpm4everyone.contactbook.adapters.ContactAdapter
 import appjpm4everyone.contactbook.adapters.OnGetButton
 import appjpm4everyone.contactbook.classes.StrongContact
 import appjpm4everyone.contactbook.classes.WeakContact
-import appjpm4everyone.contactbook.createuser.CreateUserActivity
 import appjpm4everyone.contactbook.database.MyDataBase
 import appjpm4everyone.contactbook.databinding.FragmentContactBinding
 import appjpm4everyone.contactbook.scheduledate.ScheduleActivity
@@ -198,7 +197,7 @@ class ContactFragment : Fragment(), OnGetButton {
             var minStringContact = StrongContact()
             for (i in ids.indices) {
                 minStringContact = dataBase.recoverContact(ids[i])!!
-                list.add(WeakContact(minStringContact.name, minStringContact.name, minStringContact.cellPhone, ids[i]))
+                list.add(WeakContact(minStringContact.name, minStringContact.name, minStringContact.cellPhone, ids[i], minStringContact.image))
             }
             //Set in adapter the list and interface
             contactAdapter = context?.let { ContactAdapter(it, list, this) }!!

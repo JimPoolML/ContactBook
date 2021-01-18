@@ -16,6 +16,10 @@ data class WeakContact(
         @SerializedName(value = "id", alternate = ["Id"])
         @Expose
         var id: Int
+        ,
+        @SerializedName(value = "image", alternate = ["Image"])
+        @Expose
+        var image: String
 ) {
-    constructor() : this("", "", "", 0)
+    constructor() : this("", "", "", 0,"")
 }
