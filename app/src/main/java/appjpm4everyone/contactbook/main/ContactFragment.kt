@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.os.Bundle
 import android.provider.BaseColumns
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -187,6 +188,18 @@ class ContactFragment : Fragment(), OnGetButton {
             ) c.addRow(arrayOf(i, contactList[i]!!))
         }
         mAdapter.changeCursor(c)
+    }
+
+    fun example(target: CharSequence?): Boolean {
+        return if (target != null) {
+            if (target.isEmpty()) {
+                false
+            } else {
+                Patterns.EMAIL_ADDRESS.matcher(target).matches()
+            }
+        }else{
+            false
+        }
     }
 
     fun setContactAdapter() {

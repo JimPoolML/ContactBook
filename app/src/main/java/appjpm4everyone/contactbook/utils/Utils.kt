@@ -15,11 +15,19 @@ import java.util.regex.Pattern
 object Utils {
 
     fun isValidEmail(target: CharSequence?): Boolean {
+        val patron = Pattern.compile("[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                "\\@" +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                "(" +
+                "\\." +
+                "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                ")+")
         return if (target != null) {
             if (target.isEmpty()) {
                 false
             } else {
-                Patterns.EMAIL_ADDRESS.matcher(target).matches()
+                patron.matcher(target).matches() &&  (target.length<30)
+                //Patterns.EMAIL_ADDRESS.matcher(target).matches()
             }
         }else{
             false
@@ -40,11 +48,12 @@ object Utils {
     }
 
     fun isValidPhoneNumber(target: CharSequence?): Boolean {
+        val pattern: Pattern = Pattern.compile("[0-9]{7,13}+")
         return if (target != null) {
             if (target.isEmpty()) {
                 false
             } else {
-                Patterns.PHONE.matcher(target).matches()
+                pattern.matcher(target).matches() &&  (target.length<30)
             }
         }else{
             false
