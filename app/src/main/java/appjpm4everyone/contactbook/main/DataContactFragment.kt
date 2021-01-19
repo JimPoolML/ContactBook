@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,7 +72,10 @@ class DataContactFragment : Fragment() {
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun initUI() {
         binding.btnCall.setOnClickListener{
-            callContact(strongContact.cellPhone)
+            val phoneNumber = "(+${binding.ccpCodeCountryCell.selectedCountryCode}) ${binding.edtCellPhone.text}"
+            //val phoneNumber = "(+${strongContact.country}) ${strongContact.cellPhone}"
+            Log.d("number phone fragment: ", phoneNumber)
+            callContact(phoneNumber)
         }
 
         binding.addImage.background = resources.getDrawable(R.drawable.ic_default_user)

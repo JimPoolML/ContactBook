@@ -19,8 +19,9 @@ class ContactAdapter(private val context: Context, private val weakContact: List
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = weakContact[position]
-        holder.setContactItem(item.initials, item.name, item.number, context, position, item.image)
-        holder.setContactClick(item.number.trim(), item.id, onGetButton )
+        holder.setContactItem(item.initials, item.name, item.number, context, position, item.image, item.country)
+        val phoneNumber = "(+${item.country}) ${item.number}"
+        holder.setContactClick(phoneNumber.trim(), item.id, onGetButton )
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -42,7 +43,8 @@ class ContactAdapter(private val context: Context, private val weakContact: List
             number: String,
             context: Context,
             position: Int,
-            picture: String
+            picture: String,
+            country: Int
         ) {
             if(picture.isNullOrEmpty()){
                 itemView.rv_circle.visibility = View.VISIBLE
@@ -58,6 +60,7 @@ class ContactAdapter(private val context: Context, private val weakContact: List
                 itemView.rv_add_image.visibility = View.VISIBLE
                 itemView.rv_add_image.setImageURI(Uri.parse(picture))
             }
+            itemView.ccp_codeCountry_rv.setCountryForPhoneCode(country)
             itemView.rv_person.text = name
             itemView.rv_number.text = number
 
@@ -70,6 +73,7 @@ class ContactAdapter(private val context: Context, private val weakContact: List
         ) {
             itemView.rv_constraint.setOnClickListener {
                 Log.d("my id is: ", id.toString())
+                Log.d("number phone: ", number)
                 onGetButton.onClickButton(number, id)
             }
         }

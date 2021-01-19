@@ -162,7 +162,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
         val spaceFab = resources.getDimension(R.dimen.dp_64).toInt()
         val movableFloatingActionButton =
             MovableFloatingActionButton(this, true, spaceFab)
-        movableFloatingActionButton.openFAB(this, R.drawable.radioactive_free, null, null, null)
+        movableFloatingActionButton.openFAB(this, R.drawable.ic_fab, null, null, null)
     }
 
     override fun onClickFab(xPos: Float, yPos: Float) {
