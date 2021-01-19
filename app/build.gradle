@@ -101,6 +101,9 @@ dependencies {
     //Image Cropper
     implementation  'com.theartofdev.edmodo:android-image-cropper:2.8.+'
 
+    //country picker
+    implementation 'com.hbb20:ccp:2.4.0'
+
     //Custom FAB
     implementation 'com.github.JimPoolML:customFAB:0.3.0'
 

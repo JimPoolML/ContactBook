@@ -60,10 +60,14 @@ class CreateUserActivity : BaseActivity() {
             binding.edtCellPhone.text = Utils.editableToString(it.getString("cellPhone", ""))
             binding.edtLocalPhone.text = Utils.editableToString(it.getString("localPhone", ""))
             binding.edtEmail.text = Utils.editableToString(it.getString("email", ""))
+            //Country picker
+            binding.ccpCodeCountryCell.setCountryForPhoneCode(it.getInt("country", 34))
+            binding.ccpCodeCountryTel.setCountryForPhoneCode(it.getInt("countryTel", 34))
             val image = it.getString("image", "")
             if(image.isNullOrEmpty()){
                 binding.addPicture.background = resources.getDrawable(R.drawable.ic_default_user)
             }else{
+                imageFileUri = Uri.parse(image)
                 binding.addPicture.setImageURI(Uri.parse(image))
             }
 
@@ -112,6 +116,13 @@ class CreateUserActivity : BaseActivity() {
             hideKeyboardFrom(this)
             imageDialog()
         }
+
+        initPicker()
+    }
+
+    private fun initPicker(){
+        binding.ccpCodeCountryCell.setCountryForPhoneCode(34)
+        binding.ccpCodeCountryTel.setCountryForNameCode("ES")
     }
 
     //Is always a good idea to put all the logic in methods, for easier debugging
@@ -192,6 +203,8 @@ class CreateUserActivity : BaseActivity() {
             intent.putExtra("localPhone", "" + binding.edtLocalPhone.text)
             intent.putExtra("email", "" + binding.edtEmail.text)
             intent.putExtra("image", "" + imageFileUri)
+            intent.putExtra("country", ""+binding.ccpCodeCountryCell.selectedCountryCode)
+            intent.putExtra("countryTel", ""+binding.ccpCodeCountryTel.selectedCountryCode)
             setResult(Activity.RESULT_OK, intent)
             showLongSnackError(
                 this@CreateUserActivity, resources.getString(R.string.text_complete),

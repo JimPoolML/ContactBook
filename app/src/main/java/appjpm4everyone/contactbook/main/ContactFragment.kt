@@ -197,7 +197,8 @@ class ContactFragment : Fragment(), OnGetButton {
             var minStringContact = StrongContact()
             for (i in ids.indices) {
                 minStringContact = dataBase.recoverContact(ids[i])!!
-                list.add(WeakContact(minStringContact.name, minStringContact.name, minStringContact.cellPhone, ids[i], minStringContact.image))
+                val phoneNumber = "(+${minStringContact.country}) ${minStringContact.cellPhone}"
+                list.add(WeakContact(minStringContact.name, minStringContact.name, phoneNumber, ids[i], minStringContact.image))
             }
             //Set in adapter the list and interface
             contactAdapter = context?.let { ContactAdapter(it, list, this) }!!

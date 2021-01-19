@@ -52,7 +52,7 @@ class DataContactFragment : Fragment() {
             // Inflate the layout for this fragment
             arguments?.getParcelable("example")!!
         }else{
-            StrongContact(0,"", "", "", "", "","")
+            StrongContact(0,"", "", "", "", "","", 0, 0)
         }
         binding = FragmentDataContactBinding.inflate(inflater)
         return binding.root
@@ -75,6 +75,7 @@ class DataContactFragment : Fragment() {
         }
 
         binding.addImage.background = resources.getDrawable(R.drawable.ic_default_user)
+        binding.ccpCodeCountryCell.enableDialogInitialScrollToSelection(false)
 
     }
 
@@ -105,6 +106,13 @@ class DataContactFragment : Fragment() {
         if(strongContact.email != null){
             binding.edtEmail.text = Utils.editableToString(strongContact.email)
         }
+        //Country picker
+        if(strongContact.country != 0){
+            binding.ccpCodeCountryCell.setCountryForPhoneCode(strongContact.country)
+        }
+        if(strongContact.countryTel != 0){
+            binding.ccpCodeCountryTel.setCountryForPhoneCode(strongContact.countryTel)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -117,7 +125,7 @@ class DataContactFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
-        this.strongContact = StrongContact(0, "", "","","","","")
+        this.strongContact = StrongContact(0, "", "","","","","", 0 ,0)
     }
 
     companion object {

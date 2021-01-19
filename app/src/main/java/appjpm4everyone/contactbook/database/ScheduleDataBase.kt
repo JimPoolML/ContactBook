@@ -8,7 +8,6 @@ import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import appjpm4everyone.contactbook.classes.ScheduleTable
-import appjpm4everyone.contactbook.classes.StrongContact
 
 class ScheduleDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS, null, VERSION_BASEDATOS) {
 

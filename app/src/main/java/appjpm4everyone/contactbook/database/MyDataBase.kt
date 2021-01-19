@@ -10,6 +10,8 @@ import android.database.sqlite.SQLiteOpenHelper
 import appjpm4everyone.contactbook.classes.StrongContact
 import appjpm4everyone.contactbook.classes.StrongContact.StrongContact.COL_ADDRESS
 import appjpm4everyone.contactbook.classes.StrongContact.StrongContact.COL_CELLPHONE
+import appjpm4everyone.contactbook.classes.StrongContact.StrongContact.COL_COUNTRY
+import appjpm4everyone.contactbook.classes.StrongContact.StrongContact.COL_COUNTRY_TEL
 import appjpm4everyone.contactbook.classes.StrongContact.StrongContact.COL_EMAIL
 import appjpm4everyone.contactbook.classes.StrongContact.StrongContact.COL_ID
 import appjpm4everyone.contactbook.classes.StrongContact.StrongContact.COL_IMAGE
@@ -28,7 +30,9 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
                 "$COL_CELLPHONE TEXT," +
                 "$COL_LOCAL_PHONE TEXT," +
                 "$COL_EMAIL TEXT,"+
-                "$COL_IMAGE TEXT)"
+                "$COL_IMAGE TEXT,"+
+                "$COL_COUNTRY TEXT,"+
+                "$COL_COUNTRY_TEL TEXT)"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -40,7 +44,7 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
         onCreate(db)
     }
 
-    fun addContact(name: String?, address: String?, cellPhone: String?, localPhone: String?, email: String?, image: String?) {
+    fun addContact(name: String?, address: String?, cellPhone: String?, localPhone: String?, email: String?, image: String?, country: Int, countryTel: Int) {
         val db = writableDatabase
         val values = ContentValues()
         if (db != null) {
@@ -50,13 +54,15 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
             values.put("localPhone", localPhone)
             values.put("email", email)
             values.put("image", image)
+            values.put("country", country)
+            values.put("countryTel", countryTel)
             //insert data into DB
             db.insert(TABLE_NAME, null, values)
         }
         db.close()
     }
 
-    fun modifyContact(id: Int, name: String?, address: String?, cellPhone: String?, localPhone: String?, email: String?, image: String?) {
+    fun modifyContact(id: Int, name: String?, address: String?, cellPhone: String?, localPhone: String?, email: String?, image: String?, country: Int, countryTel: Int) {
         val db = writableDatabase
         val values = ContentValues()
         if (db != null) {
@@ -66,6 +72,8 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
             values.put("localPhone", localPhone)
             values.put("email", email)
             values.put("image", image)
+            values.put("country", country)
+            values.put("countryTel", countryTel)
             //update data into DB
             db.update(TABLE_NAME, values, "$COL_ID=$id", null)
         }
@@ -87,10 +95,10 @@ class MyDataBase(context: Context?) : SQLiteOpenHelper(context, NOMBRE_BASEDATOS
     @SuppressLint("Recycle")
     fun recoverContact(id: Int): StrongContact? {
         val db = readableDatabase
-        val recoverValues = arrayOf("$COL_ID", "name", "address", "cellPhone", "localPhone", "email", "image")
+        val recoverValues = arrayOf("$COL_ID", "name", "address", "cellPhone", "localPhone", "email", "image", "country", "countryTel" )
         val c = db.query(TABLE_NAME, recoverValues, "$COL_ID=$id", null, null, null, null, null)
         c?.moveToFirst()
-        val strongContact = StrongContact(c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5), c.getString(6))
+        val strongContact = StrongContact(c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5), c.getString(6), c.getInt(7), c.getInt(8))
         db.close()
         c.close()
         return strongContact

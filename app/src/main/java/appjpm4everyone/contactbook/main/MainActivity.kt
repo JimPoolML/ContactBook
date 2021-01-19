@@ -184,7 +184,9 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 val localPhone = data.extras!!.getString("localPhone")
                 val email = data.extras!!.getString("email")
                 val image = data.extras!!.getString("image")
-                dataBase.addContact(name, address, cellPhone, localPhone, email, image)
+                val country = data.extras!!.getInt("country")
+                val countryTel = data.extras!!.getInt("countryTel")
+                dataBase.addContact(name, address, cellPhone, localPhone, email, image, country, countryTel)
                 setContactAdapter()
             } else if (resul == MODIFY_CODE) {
                 val name = data?.extras!!.getString("name")
@@ -194,7 +196,11 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 val email = data.extras!!.getString("email")
                 val image = data.extras!!.getString("image")
                 val id = data.extras!!.getInt("id")
-                dataBase.modifyContact(id, name, address, cellPhone, localPhone, email, image)
+                val country = data.extras!!.getString("country")
+                val countryTel = data.extras!!.getString("countryTel")
+                dataBase.modifyContact(id, name, address, cellPhone, localPhone, email, image, country!!.toInt(),
+                    countryTel!!.toInt()
+                )
                 setContactAdapter()
             }
         } else {
@@ -376,6 +382,8 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
         i.putExtra("localPhone", minStrongContact.localPhone)
         i.putExtra("email", minStrongContact.email)
         i.putExtra("image", minStrongContact.image)
+        i.putExtra("country", minStrongContact.country)
+        i.putExtra("countryTel", minStrongContact.countryTel)
         startActivityForResult(i, MODIFY_CODE)
     }
 
