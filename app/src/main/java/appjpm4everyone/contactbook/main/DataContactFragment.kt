@@ -1,11 +1,15 @@
 package appjpm4everyone.contactbook.main
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import appjpm4everyone.contactbook.R
 import appjpm4everyone.contactbook.classes.StrongContact
 import appjpm4everyone.contactbook.databinding.FragmentDataContactBinding
 import appjpm4everyone.contactbook.utils.Utils
@@ -45,8 +49,12 @@ class DataContactFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        strongContact = arguments?.getParcelable("example")!!
+        strongContact = if(arguments!=null) {
+            // Inflate the layout for this fragment
+            arguments?.getParcelable("example")!!
+        }else{
+            StrongContact(0,"", "", "", "", "","", 0, 0)
+        }
         binding = FragmentDataContactBinding.inflate(inflater)
         return binding.root
     }
@@ -55,15 +63,26 @@ class DataContactFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initUI()
         //setStrongContact(StrongContact(0,"a", "b", "c", "d", "e"))
-        setStrongContact(strongContact)
+        if(strongContact!=null) {
+            setStrongContact(strongContact)
+        }else{
+            setStrongContact(StrongContact(0,"", "", "", "", "", "",34, 34))
+        }
 
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun initUI() {
         binding.btnCall.setOnClickListener{
-            callContact(strongContact.cellPhone)
+            val phoneNumber = "(+${binding.ccpCodeCountryCell.selectedCountryCode}) ${binding.edtCellPhone.text}"
+            //val phoneNumber = "(+${strongContact.country}) ${strongContact.cellPhone}"
+            Log.d("number phone fragment: ", phoneNumber)
+            callContact(phoneNumber)
         }
 
+        //binding.addImage.background = resources.getDrawable(R.drawable.ic_default_user)
+        binding.addImage.setImageResource(R.drawable.ic_default_user)
+        binding.ccpCodeCountryCell.enableDialogInitialScrollToSelection(false)
 
     }
 
@@ -73,9 +92,14 @@ class DataContactFragment : Fragment() {
 
     fun setStrongContact(strongContact: StrongContact) {
 
+        if(strongContact.image.isNullOrEmpty()){
+            binding.addImage.setImageResource(R.drawable.ic_default_user)
+        }else{
+            binding.addImage.setImageURI(Uri.parse(strongContact.image))
+        }
+
         if(strongContact.name != null){
             binding.edtName.text = Utils.editableToString(strongContact.name)
-            //edt_name.text = Utils.editableToString("Lorem ipsum")
         }
         if(strongContact.address != null){
             binding.edtAddress.text = Utils.editableToString(strongContact.address)
@@ -89,6 +113,13 @@ class DataContactFragment : Fragment() {
         if(strongContact.email != null){
             binding.edtEmail.text = Utils.editableToString(strongContact.email)
         }
+        //Country picker
+        if(strongContact.country != 0){
+            binding.ccpCodeCountryCell.setCountryForPhoneCode(strongContact.country)
+        }
+        if(strongContact.countryTel != 0){
+            binding.ccpCodeCountryTel.setCountryForPhoneCode(strongContact.countryTel)
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -101,7 +132,7 @@ class DataContactFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         listener = null
-        this.strongContact = StrongContact(0, "", "","","","")
+        this.strongContact = StrongContact(0, "", "","","","","", 0 ,0)
     }
 
     companion object {

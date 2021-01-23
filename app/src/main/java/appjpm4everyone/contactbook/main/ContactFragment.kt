@@ -24,6 +24,9 @@ import appjpm4everyone.contactbook.createuser.CreateUserActivity
 import appjpm4everyone.contactbook.database.MyDataBase
 import appjpm4everyone.contactbook.databinding.FragmentContactBinding
 import appjpm4everyone.contactbook.scheduledate.ScheduleActivity
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -191,6 +194,11 @@ class ContactFragment : Fragment(), OnGetButton {
     }
 
     fun setContactAdapter() {
+
+        Timer().schedule(500){
+            //dummy time
+        }
+
         list = ArrayList()
         val rowNumber = dataBase.rowNumber()
         if (rowNumber > 0) {
@@ -198,7 +206,8 @@ class ContactFragment : Fragment(), OnGetButton {
             var minStringContact = StrongContact()
             for (i in ids.indices) {
                 minStringContact = dataBase.recoverContact(ids[i])!!
-                list.add(WeakContact(minStringContact.name, minStringContact.name, minStringContact.cellPhone, ids[i]))
+                //val phoneNumber = "(+${minStringContact.country}) ${minStringContact.cellPhone}"
+                list.add(WeakContact(minStringContact.name, minStringContact.name, minStringContact.cellPhone, ids[i], minStringContact.image,minStringContact.country ))
             }
             //Set in adapter the list and interface
             contactAdapter = context?.let { ContactAdapter(it, list, this) }!!
@@ -235,6 +244,7 @@ class ContactFragment : Fragment(), OnGetButton {
                     //Take list position
                     list.removeAt(viewHolder.adapterPosition)
                     contactAdapter.notifyDataSetChanged()
+                    listener?.onDeleteUser()
                 } else if (swipeDir == 8) {
                     //Right direction
                     recoverPosition(list[viewHolder.adapterPosition].id)

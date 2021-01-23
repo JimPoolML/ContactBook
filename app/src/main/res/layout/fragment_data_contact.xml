@@ -29,6 +29,17 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <com.blogspot.atifsoftwares.circularimageview.CircularImageView
+                    android:id="@+id/addImage"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_default_user"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <LinearLayout
                     android:id="@+id/linear_name"
                     android:layout_width="match_parent"
@@ -145,6 +156,20 @@
                         android:contentDescription="@string/hint_number"
                         app:srcCompat="@drawable/ic_cell_phone" />
 
+                    <com.hbb20.CountryCodePicker
+                        android:id="@+id/ccp_codeCountry_cell"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_45"
+                        android:layout_marginLeft="@dimen/dp_8"
+                        android:layout_marginTop="@dimen/dp_10"
+                        app:ccp_defaultLanguage="SPANISH"
+                        app:ccp_autoDetectCountry="false"
+                        app:ccp_defaultNameCode="es"
+                        app:ccp_clickable="false"
+                        app:ccp_textSize="@dimen/text_dim_15"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_phone"/>
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/ti_cellPhone"
                         android:layout_width="match_parent"
@@ -192,6 +217,20 @@
                         android:layout_gravity="center_vertical"
                         android:contentDescription="@string/hint_telephone"
                         app:srcCompat="@drawable/ic_local_phone" />
+
+                    <com.hbb20.CountryCodePicker
+                        android:id="@+id/ccp_codeCountry_tel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_45"
+                        android:layout_marginLeft="@dimen/dp_8"
+                        android:layout_marginTop="@dimen/dp_10"
+                        app:ccp_defaultLanguage="SPANISH"
+                        app:ccp_autoDetectCountry="false"
+                        app:ccp_defaultNameCode="es"
+                        app:ccp_clickable="false"
+                        app:ccp_textSize="@dimen/text_dim_15"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_phone"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/ti_localPhone"

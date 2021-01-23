@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.BaseColumns
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -36,6 +37,9 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 
 
 class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, OnFragmentDataContactListener {
@@ -145,14 +149,18 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 strongList.add(dataBase.recoverContact(ids[i])!!)
             }
             //Set data into 2nd fragment
-            if(strongList[id]!=null){
+            /*if(strongList[id]!=null){
                 val strongContact = strongList[id]
                 dataContactFragment.setStrongContact(strongContact)
-            }
+            }*/
+
+            val strongContact1 = dataBase.recoverContact(id)!!
+            dataContactFragment.setStrongContact(strongContact1)
         }
     }
 
     private fun setContactAdapter() {
+        // Use
         contactFragment.setContactAdapter()
         hideKeyboardFrom(this)
     }
@@ -162,7 +170,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
         val spaceFab = resources.getDimension(R.dimen.dp_64).toInt()
         val movableFloatingActionButton =
             MovableFloatingActionButton(this, true, spaceFab)
-        movableFloatingActionButton.openFAB(this, R.drawable.radioactive_free, null, null, null)
+        movableFloatingActionButton.openFAB(this, R.drawable.ic_fab, null, null, null)
     }
 
     override fun onClickFab(xPos: Float, yPos: Float) {
@@ -183,7 +191,11 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 val cellPhone = data.extras!!.getString("cellPhone")
                 val localPhone = data.extras!!.getString("localPhone")
                 val email = data.extras!!.getString("email")
-                dataBase.addContact(name, address, cellPhone, localPhone, email)
+                val image = data.extras!!.getString("image")
+                val country = data.extras!!.getString("country")
+                val countryTel = data.extras!!.getString("countryTel")
+                dataBase.addContact(name, address, cellPhone, localPhone, email, image,
+                    country!!.toInt(), countryTel!!.toInt())
                 setContactAdapter()
             } else if (resul == MODIFY_CODE) {
                 val name = data?.extras!!.getString("name")
@@ -191,8 +203,13 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 val cellPhone = data.extras!!.getString("cellPhone")
                 val localPhone = data.extras!!.getString("localPhone")
                 val email = data.extras!!.getString("email")
+                val image = data.extras!!.getString("image")
                 val id = data.extras!!.getInt("id")
-                dataBase.modifyContact(id, name, address, cellPhone, localPhone, email)
+                val country = data.extras!!.getString("country")
+                val countryTel = data.extras!!.getString("countryTel")
+                dataBase.modifyContact(id, name, address, cellPhone, localPhone, email, image, country!!.toInt(),
+                    countryTel!!.toInt()
+                )
                 setContactAdapter()
             }
         } else {
@@ -253,6 +270,7 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
                 Manifest.permission.CALL_PHONE,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
             )
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport) {
@@ -327,7 +345,8 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
         val orientation = resources.configuration.orientation
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // In landscape
-            loadDataContact(id-1)
+            //loadDataContact(id-1)
+            loadDataContact(id)
         } else {
             // In portrait
             val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:$callNumber"))
@@ -357,6 +376,8 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
             val f = File(filePath)
             f.writeText(jsonTutsListPretty)
             Timber.e(filePath)
+            Log.d("JSON created", jsonTutsListPretty)
+            Log.d("JSON FilePath", filePath)
         } catch (io: java.lang.Exception) {
             Toast.makeText(this, io.message, Toast.LENGTH_LONG).show()
         }
@@ -372,7 +393,19 @@ class MainActivity : BaseActivity(), CommunicateFab, OnFragmentContactListener, 
         i.putExtra("cellPhone", minStrongContact.cellPhone)
         i.putExtra("localPhone", minStrongContact.localPhone)
         i.putExtra("email", minStrongContact.email)
+        i.putExtra("image", minStrongContact.image)
+        i.putExtra("country", minStrongContact.country)
+        i.putExtra("countryTel", minStrongContact.countryTel)
         startActivityForResult(i, MODIFY_CODE)
+    }
+
+    override fun onDeleteUser() {
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // In landscape
+            dataContactFragment.setStrongContact(StrongContact(0,"", "", "", "", "", "",34, 34))
+
+        }
     }
 
     override fun onCallLandscapeContact(callNumber: String) {

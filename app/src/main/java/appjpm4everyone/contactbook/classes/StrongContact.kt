@@ -25,9 +25,18 @@ data class StrongContact (
         var localPhone: String,
         @SerializedName(value = "email", alternate = ["Email"])
         @Expose
-        var email: String
+        var email: String,
+        @SerializedName(value = "image", alternate = ["Image"])
+        @Expose
+        var image: String,
+        @SerializedName(value = "country", alternate = ["Country"])
+        @Expose
+        var country: Int,
+        @SerializedName(value = "countryTel", alternate = ["CountryTel"])
+        @Expose
+        var countryTel: Int
 ) : Parcelable {
-    constructor() : this(0,"", "", "", "", "" )
+    constructor() : this(0,"", "", "", "", "", "" , 0, 0)
 
         // Table contents are grouped together in an anonymous object.
         object StrongContact : BaseColumns {
@@ -37,5 +46,8 @@ data class StrongContact (
                 const val COL_CELLPHONE = "cellPhone"
                 const val COL_LOCAL_PHONE = "localPhone"
                 const val COL_EMAIL = "email"
+                const val COL_IMAGE = "image"
+                const val COL_COUNTRY = "country"
+                const val COL_COUNTRY_TEL = "countryTel"
         }
 }

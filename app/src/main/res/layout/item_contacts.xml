@@ -15,6 +15,7 @@
         android:layout_marginTop="@dimen/dp_15"
         android:layout_marginBottom="@dimen/dp_15"
         android:layout_marginEnd="@dimen/dp_15"
+        android:visibility="visible"
         android:tint="@color/blue_abis"
         app:srcCompat="@drawable/simple_circle"/>
 
@@ -29,10 +30,23 @@
         android:textStyle="bold"
         android:textColor="@color/white"
         android:textSize="@dimen/text_dim_24"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@id/rv_circle"
         app:layout_constraintEnd_toEndOf="@id/rv_circle"
         app:layout_constraintStart_toStartOf="@+id/rv_circle"
         app:layout_constraintTop_toTopOf="@+id/rv_circle" />
+
+    <com.blogspot.atifsoftwares.circularimageview.CircularImageView
+        android:id="@+id/rv_add_image"
+        android:layout_width="@dimen/dp_64"
+        android:layout_height="@dimen/dp_64"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginBottom="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/dp_15" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/rv_person"
@@ -51,11 +65,26 @@
         android:textColor="@color/black"
         android:text="@string/lorem_ipsum"/>
 
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/ccp_codeCountry_rv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_45"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginBottom="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/dp_15"
+        app:ccp_defaultLanguage="SPANISH"
+        app:ccp_autoDetectCountry="false"
+        app:ccp_defaultNameCode="es"
+        app:ccp_clickable="false"
+        app:ccp_textSize="@dimen/text_dim_15"
+        app:layout_constraintStart_toEndOf="@+id/rv_circle"
+        app:layout_constraintTop_toBottomOf="@id/rv_person"/>
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/rv_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/rv_circle"
+        app:layout_constraintStart_toEndOf="@+id/ccp_codeCountry_rv"
         app:layout_constraintTop_toBottomOf="@id/rv_person"
         android:layout_marginStart="@dimen/dp_15"
         android:layout_marginBottom="@dimen/dp_15"

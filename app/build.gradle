@@ -95,6 +95,16 @@ dependencies {
     //Anko
     implementation 'org.jetbrains.anko:anko-common:0.9'
 
+    //Circular image views
+    implementation 'com.github.mohammadatif:CircularImageView:1.0.0'
+
+    //Image Cropper
+    implementation  'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+
+    //country picker
+    implementation 'com.hbb20:ccp:2.4.0'
+
+    //Custom FAB
     implementation 'com.github.JimPoolML:customFAB:0.3.0'
 
     testImplementation testLibs.values()

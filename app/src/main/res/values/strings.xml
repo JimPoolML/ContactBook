@@ -6,14 +6,9 @@
     <string name="lorem_ipsum">Lorem Ipsum</string>
     <string name="n_0123456789">0123456789</string>
     <string name="jp">JP</string>
-    <string name="add_contact">Contacto agregado</string>
     <string name="delete_contact">Contacto eliminado</string>
     <string name="not_found_contact">Contacto no encontrado</string>
     <string name="call_contact">Llamar contacto</string>
-
-    <string name="invalid_email">Correo electrónico inválido</string>
-    <string name="invalid_name">Nombre inválido</string>
-    <string name="invalid_phone">Teléfono inválido</string>
 
     <string name="hint_name">Nombre</string>
     <string name="hint_address">Dirección</string>
@@ -29,7 +24,6 @@
     <string name="text_incomplete">Campos incompletos o inconsistentes</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="agendar">\u0020\u0020Agendar\u0020\u0020</string>
     <string name="llamar">Llamar</string>

@@ -5,4 +5,5 @@ interface OnFragmentContactListener {
     fun showLongSnackErrorFragment(message: String, icDelete: Int)
     fun setJSONFile(iDS: IntArray)
     fun recoverPosition(id: Int)
+    fun onDeleteUser()
 }
